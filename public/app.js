@@ -1,10 +1,9 @@
 /**
  * Full React.js Single Page Application
- * Built with React 18, React Router 6, and Axios
+ * Built with React 18, Babel, and Axios
  */
 
 const { useState, useEffect, useRef, useCallback } = React;
-const { HashRouter, Routes, Route, Navigate } = ReactRouterDOM;
 
 // Centralized API Configuration
 const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
@@ -735,62 +734,28 @@ function DashboardPage({ student, onLogout, uploadsState }) {
     );
 }
 
-function NotFoundPage() {
-    return (
-        <section className="auth-box" style={{ textAlign: "center" }}>
-            <h1 style={{ fontSize: "48px", marginBottom: "10px" }}>404</h1>
-            <p style={{ color: "#a1a1aa", marginBottom: "20px" }}>Page Not Found</p>
-            <a href="#/" style={{ color: "#ffffff", fontWeight: "bold" }}>Back to Home</a>
-        </section>
-    );
-}
-
 /* Main App Router */
 function App() {
     const { student, isAuthenticated, isLoading: authLoading, error: authError, login, register, logout } = useAuth();
     const uploadsState = useUploads(student ? student.email : null);
 
     return (
-        <HashRouter>
-            <main className="container">
-                <Routes>
-                    <Route
-                        path="/"
-                        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
-                    />
-                    <Route
-                        path="/login"
-                        element={
-                            isAuthenticated ? (
-                                <Navigate to="/dashboard" replace />
-                            ) : (
-                                <LoginPage
-                                    onLogin={login}
-                                    onRegister={register}
-                                    isLoading={authLoading}
-                                    authError={authError}
-                                />
-                            )
-                        }
-                    />
-                    <Route
-                        path="/dashboard"
-                        element={
-                            isAuthenticated ? (
-                                <DashboardPage
-                                    student={student}
-                                    onLogout={logout}
-                                    uploadsState={uploadsState}
-                                />
-                            ) : (
-                                <Navigate to="/login" replace />
-                            )
-                        }
-                    />
-                    <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-            </main>
-        </HashRouter>
+        <main className="container">
+            {isAuthenticated ? (
+                <DashboardPage
+                    student={student}
+                    onLogout={logout}
+                    uploadsState={uploadsState}
+                />
+            ) : (
+                <LoginPage
+                    onLogin={login}
+                    onRegister={register}
+                    isLoading={authLoading}
+                    authError={authError}
+                />
+            )}
+        </main>
     );
 }
 
