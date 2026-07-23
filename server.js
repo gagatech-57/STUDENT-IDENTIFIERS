@@ -15,7 +15,11 @@ const PORT = process.env.PORT || 3000;
 
 connectDB();
 
-app.use(cors());
+// Configure CORS matching your notebook notes
+app.use(cors({
+    origin: ["http://localhost:3000", "http://localhost:5173", "https://server-testing-skra.onrender.com"]
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

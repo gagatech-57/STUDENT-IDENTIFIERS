@@ -1,5 +1,6 @@
 /**
- * Centralized API Service for Auth and Upload endpoints
+ * Centralized API Service for Auth and Upload endpoints using Axios
+ * Matches notebook implementation using axios.post and axios.get
  */
 
 export const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
@@ -13,44 +14,55 @@ export function getFileUrl(url) {
 }
 
 export async function loginUser(email, password) {
-    const response = await fetch(`${API_BASE_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), password: password.trim() })
-    });
-    const data = await response.json();
-    if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+    try {
+        const response = await window.axios.post(`${API_BASE_URL}/login`, {
+            email: email.trim(),
+            password: password.trim()
+        });
+        return response.data;
+    } catch (err) {
+        throw new Error(err.response?.data?.message || err.message || "Login failed");
     }
-    return data;
 }
 
 export async function registerUser({ name, age, department, email, password }) {
-    const response = await fetch(`${API_BASE_URL}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+    try {
+        const response = await window.axios.post(`${API_BASE_URL}/register`, {
             name: name.trim(),
             age: Number(age),
             department: department.trim(),
             email: email.trim(),
             password: password.trim()
-        })
-    });
-    const data = await response.json();
-    if (!response.ok) {
-        throw new Error(data.message || "Registration failed");
+        });
+        return response.data;
+    } catch (err) {
+        throw new Error(err.response?.data?.message || err.message || "Registration failed");
     }
-    return data;
+}
+
+export async function addStudent(name, age, department) {
+    try {
+        const response = await window.axios.post(`${API_BASE_URL}/students`, {
+            name: name.trim(),
+            age: Number(age),
+            department: department.trim()
+        });
+        return response.data;
+    } catch (err) {
+        throw new Error(err.response?.data?.message || err.message || "Failed to add student");
+    }
 }
 
 export async function fetchUserUploads(userEmail) {
-    const response = await fetch(`${API_BASE_URL}/upload/files?uploadedBy=${encodeURIComponent(userEmail)}`);
-    const data = await response.json();
-    if (!response.ok) {
-        throw new Error(data.message || "Failed to fetch uploads");
+    try {
+        const response = await window.axios.get(`${API_BASE_URL}/upload/files`, {
+            params: { uploadedBy: userEmail }
+        });
+        return response.data.files || [];
+    } catch (err) {
+        console.error("Failed to fetch uploads:", err);
+        return [];
     }
-    return data.files || [];
 }
 
 export async function uploadSingleFile(file, uploadedByEmail) {
@@ -60,13 +72,12 @@ export async function uploadSingleFile(file, uploadedByEmail) {
         formData.append("uploadedBy", uploadedByEmail);
     }
 
-    const response = await fetch(`${API_BASE_URL}/upload`, {
-        method: "POST",
-        body: formData
-    });
-    const data = await response.json();
-    if (!response.ok) {
-        throw new Error(data.message || "Upload failed");
+    try {
+        const response = await window.axios.post(`${API_BASE_URL}/upload`, formData, {
+            headers: { "Content-Type": "multipart/form-data" }
+        });
+        return response.data;
+    } catch (err) {
+        throw new Error(err.response?.data?.message || err.message || "Upload failed");
     }
-    return data;
 }
