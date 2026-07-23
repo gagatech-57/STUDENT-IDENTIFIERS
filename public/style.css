@@ -1,5 +1,5 @@
 /* =========================================================
-   PURE HIGH-CONTRAST BLACK & WHITE MONOCHROME DESIGN SYSTEM
+   MATTE OBSIDIAN DARK THEME (PURE SLEEK DARK MODE)
    ========================================================= */
 
 * {
@@ -19,22 +19,22 @@ body {
     align-items: center;
     justify-content: center;
     overflow-x: hidden;
-    color: #ffffff;
-    background: #000000;
+    color: #f4f4f5;
+    background: #050507;
     position: relative;
 }
 
-/* Subtle Monochrome Grid Background */
+/* Subtle Dark Grid Lines */
 body::before {
     content: "";
     position: fixed;
     inset: 0;
     pointer-events: none;
-    opacity: 0.15;
+    opacity: 0.08;
     background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-    background-size: 40px 40px;
+        linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-size: 36px 36px;
 }
 
 .container {
@@ -47,28 +47,28 @@ body::before {
     padding: 30px 20px;
 }
 
-/* Monochrome Buttons */
+/* Sleek Dark Buttons */
 button {
     width: 100%;
-    padding: 15px 28px;
-    border: 1px solid #ffffff;
+    padding: 14px 28px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 999px;
-    background: #ffffff;
-    color: #000000;
+    background: #141418;
+    color: #ffffff;
     cursor: pointer;
     font-size: 15px;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0.5px;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 
 button:hover {
-    background: #000000;
-    color: #ffffff;
+    background: #ffffff;
+    color: #050507;
     border-color: #ffffff;
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(255, 255, 255, 0.25);
+    box-shadow: 0 8px 30px rgba(255, 255, 255, 0.2);
 }
 
 button:active {
@@ -79,50 +79,50 @@ button:active {
 .auth-box {
     width: 480px;
     padding: 42px;
-    color: #ffffff;
-    background: #0d0d0f;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #f4f4f5;
+    background: #0b0b0e;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 24px;
-    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95);
 }
 
 .auth-tabs {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     margin-bottom: 28px;
-    padding: 6px;
-    background: #000000;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 5px;
+    background: #050507;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 999px;
 }
 
 .auth-tab-btn {
     flex: 1;
     padding: 12px 18px;
-    border: none;
+    border: 1px solid transparent;
     border-radius: 999px;
     background: transparent;
-    color: #a1a1aa;
+    color: #8e8e93;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: none;
 }
 
 .auth-tab-btn.active {
-    background: #ffffff;
-    color: #000000;
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+    background: #1a1a20;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .auth-tab-btn:hover:not(.active) {
     color: #ffffff;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .auth-box h1 {
-    margin-bottom: 30px;
+    margin-bottom: 28px;
     font-size: 32px;
     font-weight: 800;
     letter-spacing: -0.5px;
@@ -139,7 +139,7 @@ button:active {
     position: absolute;
     left: 18px;
     top: 50%;
-    color: #a1a1aa;
+    color: #71717a;
     font-size: 16px;
     transform: translateY(-50%);
     transition: color 0.3s ease;
@@ -149,8 +149,8 @@ button:active {
     width: 100%;
     padding: 16px 16px 16px 50px;
     color: #ffffff;
-    background: #000000;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: #050507;
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 14px;
     outline: none;
     font-size: 15px;
@@ -159,8 +159,8 @@ button:active {
 }
 
 .input-box input:focus {
-    border-color: #ffffff;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
 .input-box input:focus + i, .input-box input:focus ~ i {
@@ -168,7 +168,7 @@ button:active {
 }
 
 .input-box input::placeholder {
-    color: #71717a;
+    color: #52525b;
 }
 
 .auth-submit-btn {
@@ -178,9 +178,9 @@ button:active {
 #error {
     margin-top: 18px;
     padding: 12px;
-    color: #ffffff;
-    background: #000000;
-    border: 1px solid #ffffff;
+    color: #f87171;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
     border-radius: 12px;
     font-weight: 700;
     text-align: center;
@@ -190,10 +190,11 @@ button:active {
 .success-text {
     margin-top: 18px;
     padding: 12px;
-    color: #000000;
-    background: #ffffff;
+    color: #4ade80;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.25);
     border-radius: 12px;
-    font-weight: 800;
+    font-weight: 700;
     text-align: center;
     font-size: 14px;
 }
@@ -215,7 +216,7 @@ button:active {
 .profile-kicker {
     display: block;
     margin-bottom: 4px;
-    color: #a1a1aa;
+    color: #71717a;
     font-size: 12px;
     font-weight: 800;
     letter-spacing: 3px;
@@ -240,12 +241,12 @@ button:active {
     align-items: center;
     gap: 8px;
     padding: 10px 18px;
-    color: #ffffff;
-    background: #000000;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e4e4e7;
+    background: #050507;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 999px;
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0.5px;
 }
 
@@ -253,9 +254,9 @@ button:active {
     content: "";
     width: 8px;
     height: 8px;
-    background: #ffffff;
+    background: #4ade80;
     border-radius: 50%;
-    box-shadow: 0 0 10px #ffffff;
+    box-shadow: 0 0 10px #4ade80;
 }
 
 #topLogoutBtn {
@@ -265,25 +266,26 @@ button:active {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: #ffffff;
-    color: #000000;
-    border: 1px solid #ffffff;
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+    background: #141418;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
 #topLogoutBtn:hover {
-    background: #000000;
+    background: #ef4444;
     color: #ffffff;
-    border-color: #ffffff;
+    border-color: #ef4444;
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
 }
 
-/* Dashboard Card Panel */
+/* Dashboard Panel */
 .profile-panel {
     position: relative;
     width: 100%;
     overflow: hidden;
-    background: #0d0d0f;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: #0b0b0e;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 28px;
     box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95);
 }
@@ -292,31 +294,31 @@ button:active {
     content: "";
     position: absolute;
     inset: 0 0 auto;
-    height: 3px;
-    background: #ffffff;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.2);
 }
 
 .profile-hero {
     position: relative;
     display: grid;
-    grid-template-columns: 150px 1fr;
+    grid-template-columns: 140px 1fr;
     gap: 28px;
     align-items: center;
     padding: 42px 42px 30px;
 }
 
 .student-avatar {
-    width: 140px;
-    height: 140px;
+    width: 130px;
+    height: 130px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #000000;
-    background: #ffffff;
-    border: 2px solid #ffffff;
-    border-radius: 24px;
-    box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
-    font-size: 68px;
+    color: #ffffff;
+    background: #050507;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    font-size: 60px;
 }
 
 .student-summary {
@@ -327,18 +329,18 @@ button:active {
     display: inline-block;
     margin-bottom: 10px;
     padding: 6px 14px;
-    color: #ffffff;
-    background: #000000;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #d4d4d8;
+    background: #050507;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 999px;
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 1px;
 }
 
 .student-summary h2 {
     margin-bottom: 8px;
-    font-size: 42px;
+    font-size: 40px;
     font-weight: 800;
     line-height: 1.1;
     color: #ffffff;
@@ -348,7 +350,7 @@ button:active {
 .student-summary p {
     color: #a1a1aa;
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 500;
     overflow-wrap: anywhere;
 }
 
@@ -363,16 +365,16 @@ button:active {
 .info-tile {
     min-width: 0;
     padding: 20px;
-    background: #000000;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: #050507;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 18px;
     transition: all 0.3s ease;
 }
 
 .info-tile:hover {
-    border-color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
 }
 
 .info-tile i {
@@ -382,10 +384,11 @@ button:active {
     align-items: center;
     justify-content: center;
     margin-bottom: 14px;
-    color: #000000;
-    background: #ffffff;
+    color: #ffffff;
+    background: #141418;
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 12px;
-    font-size: 18px;
+    font-size: 17px;
 }
 
 .info-tile strong {
@@ -410,8 +413,8 @@ button:active {
 .upload-box {
     margin: 0 42px 34px;
     padding: 30px;
-    background: #000000;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: #050507;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 22px;
 }
 
@@ -431,20 +434,6 @@ button:active {
     gap: 10px;
 }
 
-.mongo-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: #000000;
-    border: 1px solid #ffffff;
-    color: #ffffff;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-}
-
 .upload-form {
     display: flex;
     flex-direction: column;
@@ -454,8 +443,8 @@ button:active {
 .dropzone {
     padding: 36px 24px;
     text-align: center;
-    background: #0d0d0f;
-    border: 2px dashed rgba(255, 255, 255, 0.3);
+    background: #0b0b0e;
+    border: 2px dashed rgba(255, 255, 255, 0.2);
     border-radius: 18px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -467,29 +456,29 @@ button:active {
 }
 
 .dropzone:hover, .dropzone.dragging {
-    background: #000000;
-    border-color: #ffffff;
+    background: #141418;
+    border-color: rgba(255, 255, 255, 0.5);
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.15);
 }
 
 .dropzone.has-file {
-    border-color: #ffffff;
-    background: #141418;
+    border-color: rgba(255, 255, 255, 0.4);
+    background: #121216;
 }
 
 .drop-icon {
-    font-size: 44px;
-    color: #ffffff;
+    font-size: 42px;
+    color: #a1a1aa;
     transition: transform 0.3s ease;
 }
 
 .drop-icon.success {
-    color: #ffffff;
+    color: #4ade80;
 }
 
 .dropzone:hover .drop-icon {
-    transform: scale(1.12);
+    transform: scale(1.1);
+    color: #ffffff;
 }
 
 .drop-text strong, .selected-file-info strong {
@@ -501,7 +490,7 @@ button:active {
 }
 
 .drop-text span, .selected-file-info span {
-    color: #a1a1aa;
+    color: #71717a;
     font-size: 13px;
 }
 
@@ -538,22 +527,22 @@ button:active {
 }
 
 .upload-status-alert.success {
-    background: #ffffff;
-    color: #000000;
-    border: 1px solid #ffffff;
+    background: rgba(34, 197, 94, 0.1);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.25);
 }
 
 .upload-status-alert.error {
-    background: #000000;
-    color: #ffffff;
-    border: 1px solid #ffffff;
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
 /* Stored Files View */
 .stored-files-section {
     margin-top: 30px;
     padding-top: 24px;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .stored-files-section h4 {
@@ -570,8 +559,8 @@ button:active {
 }
 
 .file-card {
-    background: #0d0d0f;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: #0b0b0e;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 16px;
     overflow: hidden;
     transition: all 0.3s ease;
@@ -579,8 +568,8 @@ button:active {
 
 .file-card:hover {
     transform: translateY(-4px);
-    border-color: #ffffff;
-    box-shadow: 0 15px 35px rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
 }
 
 .file-card-preview {
@@ -608,7 +597,7 @@ button:active {
     align-items: center;
     justify-content: center;
     font-size: 42px;
-    color: #ffffff;
+    color: #71717a;
     background: #000000;
 }
 
@@ -622,12 +611,12 @@ button:active {
     gap: 5px;
     padding: 4px 9px;
     margin-bottom: 8px;
-    background: #ffffff;
-    color: #000000;
-    border: 1px solid #ffffff;
+    background: #141418;
+    color: #d4d4d8;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 6px;
     font-size: 11px;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0.3px;
 }
 
@@ -647,34 +636,36 @@ button:active {
     align-items: center;
     justify-content: space-between;
     font-size: 12px;
-    color: #a1a1aa;
+    color: #71717a;
 }
 
 .view-link {
     color: #ffffff;
     text-decoration: none;
-    font-weight: 800;
+    font-weight: 700;
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    opacity: 0.8;
 }
 
 .view-link:hover {
+    opacity: 1;
     text-decoration: underline;
 }
 
 .empty-files-box {
     padding: 36px 20px;
     text-align: center;
-    background: #0d0d0f;
-    border: 1px dashed rgba(255, 255, 255, 0.2);
+    background: #050507;
+    border: 1px dashed rgba(255, 255, 255, 0.12);
     border-radius: 16px;
-    color: #a1a1aa;
+    color: #71717a;
 }
 
 .empty-icon {
     font-size: 38px;
-    color: #71717a;
+    color: #52525b;
     margin-bottom: 12px;
 }
 
@@ -690,19 +681,20 @@ button:active {
     color: #71717a;
 }
 
-/* Monochrome Footer */
+/* Footer */
 .profile-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 22px 42px;
-    background: #000000;
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    background: #050507;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .barcode {
-    width: 200px;
-    height: 22px;
+    width: 180px;
+    height: 20px;
+    opacity: 0.4;
     background: repeating-linear-gradient(
         90deg,
         #ffffff 0 2px,
@@ -713,10 +705,10 @@ button:active {
 }
 
 .profile-code {
-    color: #ffffff;
+    color: #71717a;
     font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 2px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
 }
 
 /* Responsive Media Queries */
