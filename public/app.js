@@ -1,9 +1,798 @@
 /**
- * Main React Application Entry Point
- * Imports modular App component and mounts to DOM root
+ * Full React.js Single Page Application
+ * Built with React 18, React Router 6, and Axios
  */
 
-import { App } from "./src/App.jsx";
+const { useState, useEffect, useRef, useCallback } = React;
+const { HashRouter, Routes, Route, Navigate } = ReactRouterDOM;
+
+// Centralized API Configuration
+const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:3000"
+    : "https://server-testing-skra.onrender.com";
+
+function getFileUrl(url) {
+    if (!url) return "";
+    if (url.startsWith("http://") || url.startsWith("https://")) return url;
+    return `${API_BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+}
+
+function formatUploadDateTime(dateString) {
+    if (!dateString) return "Just now";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Just now";
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const formattedHours = String(hours).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${formattedHours}.${minutes} ${ampm}`;
+}
+
+/* API Service Functions */
+async function loginUser(email, password) {
+    const response = await fetch(`${API_BASE_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email.trim(), password: password.trim() })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+    }
+    return data;
+}
+
+async function registerUser({ name, age, department, email, password }) {
+    const response = await fetch(`${API_BASE_URL}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            name: name.trim(),
+            age: Number(age),
+            department: department.trim(),
+            email: email.trim(),
+            password: password.trim()
+        })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.message || "Registration failed");
+    }
+    return data;
+}
+
+async function fetchUserUploads(userEmail) {
+    const response = await fetch(`${API_BASE_URL}/upload/files?uploadedBy=${encodeURIComponent(userEmail)}`);
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.message || "Failed to fetch uploads");
+    }
+    return data.files || [];
+}
+
+async function uploadSingleFile(file, uploadedByEmail) {
+    const formData = new FormData();
+    formData.append("photo", file);
+    if (uploadedByEmail) {
+        formData.append("uploadedBy", uploadedByEmail);
+    }
+
+    const response = await fetch(`${API_BASE_URL}/upload`, {
+        method: "POST",
+        body: formData
+    });
+    const data = await response.json();
+    if (!response.ok) {
+        throw new Error(data.message || "Upload failed");
+    }
+    return data;
+}
+
+/* Custom Hooks */
+function useAuth() {
+    const [student, setStudent] = useState(() => {
+        try {
+            const saved = localStorage.getItem("student");
+            return saved ? JSON.parse(saved) : null;
+        } catch (e) {
+            return null;
+        }
+    });
+
+    const [token, setToken] = useState(() => localStorage.getItem("token") || "");
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const login = useCallback(async (email, password) => {
+        setIsLoading(true);
+        setError("");
+        try {
+            const data = await loginUser(email, password);
+            localStorage.setItem("student", JSON.stringify(data.student));
+            localStorage.setItem("token", data.token);
+            setStudent(data.student);
+            setToken(data.token);
+            return data;
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    const register = useCallback(async (userData) => {
+        setIsLoading(true);
+        setError("");
+        try {
+            const data = await registerUser(userData);
+            localStorage.setItem("student", JSON.stringify(data.student));
+            localStorage.setItem("token", data.token);
+            setStudent(data.student);
+            setToken(data.token);
+            return data;
+        } catch (err) {
+            setError(err.message);
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    const logout = useCallback(() => {
+        localStorage.removeItem("student");
+        localStorage.removeItem("token");
+        setStudent(null);
+        setToken("");
+        setError("");
+    }, []);
+
+    return { student, token, isAuthenticated: !!student, isLoading, error, setError, login, register, logout };
+}
+
+function useUploads(userEmail) {
+    const [files, setFiles] = useState([]);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadMsg, setUploadMsg] = useState("");
+    const [uploadError, setUploadError] = useState("");
+
+    const loadFiles = useCallback(async () => {
+        if (!userEmail) return;
+        try {
+            const userFiles = await fetchUserUploads(userEmail);
+            setFiles(userFiles);
+        } catch (err) {
+            console.error("Failed to load user uploads:", err);
+        }
+    }, [userEmail]);
+
+    useEffect(() => {
+        loadFiles();
+    }, [loadFiles]);
+
+    const upload = useCallback(async (selectedFile) => {
+        if (!selectedFile) {
+            setUploadError("Please select a file to upload");
+            return;
+        }
+
+        setIsUploading(true);
+        setUploadMsg("");
+        setUploadError("");
+
+        try {
+            const data = await uploadSingleFile(selectedFile, userEmail);
+            setUploadMsg(data.message || "Upload successful!");
+            await loadFiles();
+            return data;
+        } catch (err) {
+            setUploadError(err.message || "File upload failed");
+            throw err;
+        } finally {
+            setIsUploading(false);
+        }
+    }, [userEmail, loadFiles]);
+
+    return { files, isUploading, uploadMsg, uploadError, upload, reloadFiles: loadFiles };
+}
+
+/* UI Components */
+function Navbar({ student, onLogout }) {
+    return (
+        <header className="profile-header">
+            <div>
+                <span className="profile-kicker">Student Portal</span>
+                <h1>Profile Dashboard</h1>
+            </div>
+            {student && (
+                <div className="header-actions">
+                    <span className="status-pill">Active</span>
+                    <button
+                        id="topLogoutBtn"
+                        type="button"
+                        onClick={onLogout}
+                        title="Logout of session"
+                    >
+                        <i className="fa-solid fa-door-open"></i> Logout
+                    </button>
+                </div>
+            )}
+        </header>
+    );
+}
+
+function Footer({ studentEmail }) {
+    return (
+        <div className="profile-footer">
+            <div className="barcode"></div>
+            {studentEmail && (
+                <span className="profile-code">LOGGED IN: {studentEmail.toUpperCase()}</span>
+            )}
+        </div>
+    );
+}
+
+function InfoTile({ icon, label, value }) {
+    return (
+        <article className="info-tile">
+            <i className={icon}></i>
+            <div>
+                <strong>{label}</strong>
+                <span>{value || "N/A"}</span>
+            </div>
+        </article>
+    );
+}
+
+function Dropzone({ file, setFile, onUploadSubmit, isUploading }) {
+    const [isDragging, setIsDragging] = useState(false);
+    const fileInputRef = useRef(null);
+
+    function handleDrop(e) {
+        e.preventDefault();
+        setIsDragging(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            setFile(e.dataTransfer.files[0]);
+        }
+    }
+
+    return (
+        <form onSubmit={onUploadSubmit} className="upload-form">
+            <div
+                className={`dropzone ${isDragging ? "dragging" : ""} ${file ? "has-file" : ""}`}
+                onDrop={handleDrop}
+                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                onDragLeave={() => setIsDragging(false)}
+                onClick={() => fileInputRef.current && fileInputRef.current.click()}
+            >
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    id="uploadInput"
+                    style={{ display: "none" }}
+                    onChange={(e) => setFile(e.target.files[0])}
+                />
+                <i className={file ? "fa-solid fa-file-circle-check drop-icon success" : "fa-solid fa-cloud-arrow-up drop-icon"}></i>
+                {file ? (
+                    <div className="selected-file-info">
+                        <strong>{file.name}</strong>
+                        <span>{(file.size / 1024).toFixed(1)} KB • Click to change</span>
+                    </div>
+                ) : (
+                    <div className="drop-text">
+                        <strong>Click or drag a file to upload</strong>
+                        <span>Supports JPG, PNG, WEBP, GIF, PDF, DOCX (Max 10MB)</span>
+                    </div>
+                )}
+            </div>
+
+            <button type="submit" className="upload-btn" disabled={isUploading || !file}>
+                {isUploading ? (
+                    <span className="btn-flex"><i className="fa-solid fa-spinner fa-spin"></i> Uploading file...</span>
+                ) : (
+                    <span className="btn-flex"><i className="fa-solid fa-upload"></i> Upload File</span>
+                )}
+            </button>
+        </form>
+    );
+}
+
+function FileCard({ item }) {
+    const isImage = item.mimeType && item.mimeType.startsWith("image/");
+
+    return (
+        <div className="file-card">
+            {isImage ? (
+                <div className="file-card-preview">
+                    <img src={getFileUrl(item.url)} alt={item.originalName || "Uploaded File"} />
+                </div>
+            ) : (
+                <div className="file-card-icon">
+                    <i className="fa-solid fa-file-lines"></i>
+                </div>
+            )}
+            <div className="file-card-details">
+                <div className="file-card-time-badge">
+                    <i className="fa-regular fa-clock"></i> {formatUploadDateTime(item.uploadedAt)}
+                </div>
+                <span className="file-card-name" title={item.originalName || item.filename}>
+                    {item.originalName || item.filename}
+                </span>
+                <div className="file-card-meta">
+                    <span>{(item.size / 1024).toFixed(1)} KB</span>
+                    <a href={getFileUrl(item.url)} target="_blank" rel="noopener noreferrer" className="view-link">
+                        <i className="fa-solid fa-arrow-up-right-from-square"></i> Open
+                    </a>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function AxiosApiTester() {
+    const [method, setMethod] = useState("GET");
+    const [endpoint, setEndpoint] = useState("/test");
+    const [responseResult, setResponseResult] = useState(null);
+    const [isTesting, setIsTesting] = useState(false);
+    const [responseTime, setResponseTime] = useState(null);
+
+    async function runAxiosTest(customMethod = method, customEndpoint = endpoint) {
+        setIsTesting(true);
+        setResponseResult(null);
+        setResponseTime(null);
+
+        const fullUrl = `${API_BASE_URL}${customEndpoint.startsWith("/") ? "" : "/"}${customEndpoint}`;
+        const startTime = performance.now();
+
+        try {
+            const res = await window.axios({
+                method: customMethod,
+                url: fullUrl,
+                timeout: 10000
+            });
+
+            const endTime = performance.now();
+            setResponseTime(Math.round(endTime - startTime));
+            setResponseResult({
+                status: res.status,
+                statusText: res.statusText || "OK",
+                data: res.data
+            });
+        } catch (err) {
+            const endTime = performance.now();
+            setResponseTime(Math.round(endTime - startTime));
+            if (err.response) {
+                setResponseResult({
+                    status: err.response.status,
+                    statusText: err.response.statusText || "Error",
+                    data: err.response.data
+                });
+            } else {
+                setResponseResult({
+                    status: 500,
+                    statusText: "Network Error",
+                    data: { message: err.message }
+                });
+            }
+        } finally {
+            setIsTesting(false);
+        }
+    }
+
+    return (
+        <div className="upload-box api-tester-box">
+            <div className="upload-header">
+                <h3><i className="fa-solid fa-code"></i> Backend API Tester (Axios)</h3>
+                <span className="axios-badge"><i className="fa-solid fa-bolt"></i> Axios HTTP</span>
+            </div>
+
+            <div className="preset-test-buttons">
+                <span className="preset-label">Quick Preset Tests:</span>
+                <button
+                    type="button"
+                    className="preset-btn"
+                    onClick={() => { setMethod("GET"); setEndpoint("/test"); runAxiosTest("GET", "/test"); }}
+                >
+                    GET /test
+                </button>
+                <button
+                    type="button"
+                    className="preset-btn"
+                    onClick={() => { setMethod("GET"); setEndpoint("/upload/test"); runAxiosTest("GET", "/upload/test"); }}
+                >
+                    GET /upload/test
+                </button>
+                <button
+                    type="button"
+                    className="preset-btn"
+                    onClick={() => { setMethod("GET"); setEndpoint("/upload/files"); runAxiosTest("GET", "/upload/files"); }}
+                >
+                    GET /upload/files
+                </button>
+            </div>
+
+            <div className="custom-api-form">
+                <div className="api-input-group">
+                    <select
+                        value={method}
+                        onChange={(e) => setMethod(e.target.value)}
+                        className="method-select"
+                    >
+                        <option value="GET">GET</option>
+                        <option value="POST">POST</option>
+                    </select>
+                    <input
+                        type="text"
+                        value={endpoint}
+                        placeholder="/endpoint"
+                        onChange={(e) => setEndpoint(e.target.value)}
+                        className="endpoint-input"
+                    />
+                    <button
+                        type="button"
+                        onClick={() => runAxiosTest()}
+                        disabled={isTesting}
+                        className="run-test-btn"
+                    >
+                        {isTesting ? <i className="fa-solid fa-spinner fa-spin"></i> : <i className="fa-solid fa-paper-plane"></i>} Run Test
+                    </button>
+                </div>
+            </div>
+
+            {responseResult && (
+                <div className="axios-response-container">
+                    <div className="response-header">
+                        <span className={`status-tag ${responseResult.status >= 200 && responseResult.status < 300 ? "status-200" : "status-400"}`}>
+                            Status: {responseResult.status} {responseResult.statusText}
+                        </span>
+                        {responseTime !== null && (
+                            <span className="time-tag">
+                                <i className="fa-regular fa-clock"></i> {responseTime} ms
+                            </span>
+                        )}
+                    </div>
+                    <pre className="json-response-code">
+                        <code>{JSON.stringify(responseResult.data, null, 2)}</code>
+                    </pre>
+                </div>
+            )}
+        </div>
+    );
+}
+
+/* Page Components */
+function LoginPage({ onLogin, onRegister, isLoading, authError }) {
+    const [isRegister, setIsRegister] = useState(false);
+    
+    // Login State
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    
+    // Register State
+    const [name, setName] = useState("");
+    const [age, setAge] = useState("");
+    const [department, setDepartment] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    const [formError, setFormError] = useState("");
+    const [successMsg, setSuccessMsg] = useState("");
+
+    function toggleMode(mode) {
+        setIsRegister(mode);
+        setFormError("");
+        setSuccessMsg("");
+    }
+
+    async function handleLoginSubmit(event) {
+        event.preventDefault();
+        setFormError("");
+        setSuccessMsg("");
+
+        if (!email.trim() || !password.trim()) {
+            setFormError("Please enter Email & Password");
+            return;
+        }
+
+        try {
+            await onLogin(email, password);
+        } catch (err) {
+            // error handled by hook
+        }
+    }
+
+    async function handleRegisterSubmit(event) {
+        event.preventDefault();
+        setFormError("");
+        setSuccessMsg("");
+
+        if (!name.trim() || !age.trim() || !department.trim() || !email.trim() || !password || !confirmPassword) {
+            setFormError("Please fill all required fields");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            setFormError("Passwords do not match! Please check both password fields.");
+            return;
+        }
+
+        try {
+            await onRegister({ name, age, department, email, password });
+            setSuccessMsg("Account Created Successfully! Logging you in...");
+        } catch (err) {
+            // error handled by hook
+        }
+    }
+
+    const displayedError = formError || authError;
+
+    return (
+        <section className="auth-box">
+            <div className="auth-tabs">
+                <button
+                    type="button"
+                    className={`auth-tab-btn ${!isRegister ? "active" : ""}`}
+                    onClick={() => toggleMode(false)}
+                >
+                    Login
+                </button>
+                <button
+                    type="button"
+                    className={`auth-tab-btn ${isRegister ? "active" : ""}`}
+                    onClick={() => toggleMode(true)}
+                >
+                    Create Account
+                </button>
+            </div>
+
+            <h1>{isRegister ? "Create Account" : "Student Login"}</h1>
+
+            {!isRegister ? (
+                <form onSubmit={handleLoginSubmit}>
+                    <div className="input-box">
+                        <i className="fa fa-envelope"></i>
+                        <input
+                            type="email"
+                            value={email}
+                            placeholder="Enter Email"
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
+                    <div className="input-box">
+                        <i className="fa fa-lock"></i>
+                        <input
+                            type="password"
+                            value={password}
+                            placeholder="Enter Password"
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+                    <button type="submit" disabled={isLoading} className="auth-submit-btn">
+                        {isLoading ? "Logging in..." : "Login"}
+                    </button>
+                </form>
+            ) : (
+                <form onSubmit={handleRegisterSubmit}>
+                    <div className="input-box">
+                        <i className="fa-solid fa-user"></i>
+                        <input
+                            type="text"
+                            value={name}
+                            placeholder="Full Name"
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    </div>
+                    <div className="input-box">
+                        <i className="fa-solid fa-graduation-cap"></i>
+                        <input
+                            type="text"
+                            value={department}
+                            placeholder="Department (e.g. Computer Science)"
+                            onChange={(e) => setDepartment(e.target.value)}
+                        />
+                    </div>
+                    <div className="input-box">
+                        <i className="fa-solid fa-calendar"></i>
+                        <input
+                            type="number"
+                            value={age}
+                            placeholder="Age"
+                            onChange={(e) => setAge(e.target.value)}
+                        />
+                    </div>
+                    <div className="input-box">
+                        <i className="fa-solid fa-envelope"></i>
+                        <input
+                            type="email"
+                            value={email}
+                            placeholder="Email Address"
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
+                    </div>
+                    <div className="input-box">
+                        <i className="fa-solid fa-lock"></i>
+                        <input
+                            type="password"
+                            value={password}
+                            placeholder="Password"
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                    </div>
+                    <div className="input-box">
+                        <i className="fa-solid fa-shield-halved"></i>
+                        <input
+                            type="password"
+                            value={confirmPassword}
+                            placeholder="Confirm Password (re-type password)"
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                    </div>
+                    <button type="submit" disabled={isLoading} className="auth-submit-btn">
+                        {isLoading ? "Creating Account..." : "Create Account & Login"}
+                    </button>
+                </form>
+            )}
+
+            {displayedError && <p id="error">{displayedError}</p>}
+            {successMsg && <p className="success-text">{successMsg}</p>}
+        </section>
+    );
+}
+
+function DashboardPage({ student, onLogout, uploadsState }) {
+    const [fileToUpload, setFileToUpload] = useState(null);
+
+    const { files, isUploading, uploadMsg, uploadError, upload } = uploadsState;
+
+    async function handleUploadSubmit(event) {
+        event.preventDefault();
+        try {
+            await upload(fileToUpload);
+            setFileToUpload(null);
+            const fileInput = document.getElementById("uploadInput");
+            if (fileInput) fileInput.value = "";
+        } catch (e) {
+            // error handled in hook state
+        }
+    }
+
+    const alertMsg = uploadMsg || uploadError;
+    const isSuccess = !!uploadMsg;
+
+    return (
+        <section className="profile-box">
+            <Navbar student={student} onLogout={onLogout} />
+
+            <div className="profile-panel">
+                <div className="profile-hero">
+                    <div className="student-avatar">
+                        <i className="fa-solid fa-user-graduate"></i>
+                    </div>
+                    <div className="student-summary">
+                        <span className="student-id">ID {student.studentId}</span>
+                        <h2>{student.name}</h2>
+                        <p>{student.email}</p>
+                    </div>
+                </div>
+
+                <div className="detail-grid">
+                    <InfoTile icon="fa-solid fa-id-card" label="Student ID" value={student.studentId} />
+                    <InfoTile icon="fa-solid fa-building-columns" label="Department" value={student.department} />
+                    <InfoTile icon="fa-solid fa-calendar" label="Age" value={student.age} />
+                    <InfoTile icon="fa-solid fa-envelope" label="Email" value={student.email} />
+                </div>
+
+                <div className="upload-box">
+                    <div className="upload-header">
+                        <h3><i className="fa-solid fa-cloud-arrow-up"></i> File & Image Upload</h3>
+                    </div>
+
+                    <Dropzone
+                        file={fileToUpload}
+                        setFile={setFileToUpload}
+                        onUploadSubmit={handleUploadSubmit}
+                        isUploading={isUploading}
+                    />
+
+                    {alertMsg && (
+                        <div className={`upload-status-alert ${isSuccess ? "success" : "error"}`}>
+                            <i className={isSuccess ? "fa-solid fa-circle-check" : "fa-solid fa-circle-exclamation"}></i>
+                            <span>{alertMsg}</span>
+                        </div>
+                    )}
+
+                    <div className="stored-files-section">
+                        <h4><i className="fa-solid fa-images"></i> My Uploaded Files ({files.length})</h4>
+                        {files.length > 0 ? (
+                            <div className="files-grid">
+                                {files.map((item, index) => (
+                                    <FileCard key={item._id || index} item={item} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="empty-files-box">
+                                <i className="fa-regular fa-folder-open empty-icon"></i>
+                                <p>No files uploaded by {student.email} yet.</p>
+                                <span>Upload an image above to see it appear here!</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Axios API Tester */}
+                <AxiosApiTester />
+
+                <Footer studentEmail={student.email} />
+            </div>
+        </section>
+    );
+}
+
+function NotFoundPage() {
+    return (
+        <section className="auth-box" style={{ textAlign: "center" }}>
+            <h1 style={{ fontSize: "48px", marginBottom: "10px" }}>404</h1>
+            <p style={{ color: "#a1a1aa", marginBottom: "20px" }}>Page Not Found</p>
+            <a href="#/" style={{ color: "#ffffff", fontWeight: "bold" }}>Back to Home</a>
+        </section>
+    );
+}
+
+/* Main App Router */
+function App() {
+    const { student, isAuthenticated, isLoading: authLoading, error: authError, login, register, logout } = useAuth();
+    const uploadsState = useUploads(student ? student.email : null);
+
+    return (
+        <HashRouter>
+            <main className="container">
+                <Routes>
+                    <Route
+                        path="/"
+                        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
+                    />
+                    <Route
+                        path="/login"
+                        element={
+                            isAuthenticated ? (
+                                <Navigate to="/dashboard" replace />
+                            ) : (
+                                <LoginPage
+                                    onLogin={login}
+                                    onRegister={register}
+                                    isLoading={authLoading}
+                                    authError={authError}
+                                />
+                            )
+                        }
+                    />
+                    <Route
+                        path="/dashboard"
+                        element={
+                            isAuthenticated ? (
+                                <DashboardPage
+                                    student={student}
+                                    onLogout={logout}
+                                    uploadsState={uploadsState}
+                                />
+                            ) : (
+                                <Navigate to="/login" replace />
+                            )
+                        }
+                    />
+                    <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+            </main>
+        </HashRouter>
+    );
+}
 
 const rootElement = document.getElementById("root");
 if (rootElement) {
