@@ -5,7 +5,8 @@ const formatFileDetails = (file) => ({
     originalName: file.originalname,
     mimeType: file.mimetype,
     size: file.size,
-    url: `/uploads/${file.filename}`
+    url: `/uploads/${file.filename}`,
+    uploadedAt: new Date()
 });
 
 const checkUploadStatus = (req, res) => {

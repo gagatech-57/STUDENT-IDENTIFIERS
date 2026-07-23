@@ -318,7 +318,14 @@ function UploadTestCard() {
                         h(
                             "div",
                             { className: "file-card-details" },
-                            h("span", { className: "file-card-name", title: item.originalName }, item.originalName || item.filename),
+                            h(
+                                "div",
+                                { className: "file-card-time-badge" },
+                                h("i", { className: "fa-regular fa-clock" }),
+                                " ",
+                                formatUploadDateTime(item.uploadedAt)
+                            ),
+                            h("span", { className: "file-card-name", title: item.originalName || item.filename }, item.originalName || item.filename),
                             h("div", { className: "file-card-meta" },
                                 h("span", null, `${(item.size / 1024).toFixed(1)} KB`),
                                 h("a", { href: item.url, target: "_blank", className: "view-link" }, h("i", { className: "fa-solid fa-arrow-up-right-from-square" }), " Open")
@@ -329,6 +336,25 @@ function UploadTestCard() {
             )
         )
     );
+}
+
+function formatUploadDateTime(dateString) {
+    if (!dateString) return "Just now";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Just now";
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const formattedHours = String(hours).padStart(2, '0');
+
+    return `${year}-${month}-${day} ${formattedHours}.${minutes} ${ampm}`;
 }
 
 function InfoTile({ icon, label, value }) {

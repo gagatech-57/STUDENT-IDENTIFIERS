@@ -609,6 +609,21 @@ button:active {
     padding: 14px;
 }
 
+.file-card-time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 9px;
+    margin-bottom: 8px;
+    background: rgba(242, 207, 151, 0.14);
+    border: 1px solid rgba(242, 207, 151, 0.28);
+    color: #f2cf97;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}
+
 .file-card-name {
     display: block;
     color: #f8fafc;
