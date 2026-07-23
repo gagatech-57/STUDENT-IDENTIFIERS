@@ -1,5 +1,7 @@
+require("dotenv").config();
 const path = require("path");
 const express = require("express");
+const cors = require("cors");
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
@@ -13,6 +15,7 @@ const PORT = process.env.PORT || 3000;
 
 connectDB();
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -36,6 +39,5 @@ app.use("/upload", uploadRoutes);
 app.use(notFound);
 
 app.listen(PORT, () => {
-    console.log(`Server Running Successfully!`);
-    console.log(`http://localhost:${PORT}`);
+    console.log(`Server Running Successfully on PORT ${PORT}!`);
 });

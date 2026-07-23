@@ -1,4 +1,13 @@
-const API = "http://localhost:3000";
+const API = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:3000"
+    : "https://server-testing-skra.onrender.com";
+
+function getFileUrl(url) {
+    if (!url) return "";
+    if (url.startsWith("http://") || url.startsWith("https://")) return url;
+    return `${API}${url.startsWith("/") ? "" : "/"}${url}`;
+}
+
 const { createElement: h, useEffect, useState } = React;
 
 function AuthForm({ onLogin }) {
@@ -474,7 +483,7 @@ function UploadTestCard({ student }) {
                             { key: item._id || index, className: "file-card" },
                             item.mimeType && item.mimeType.startsWith("image/")
                                 ? h("div", { className: "file-card-preview" },
-                                    h("img", { src: item.url, alt: item.originalName || "Uploaded File" })
+                                    h("img", { src: getFileUrl(item.url), alt: item.originalName || "Uploaded File" })
                                 )
                                 : h("div", { className: "file-card-icon" },
                                     h("i", { className: "fa-solid fa-file-lines" })
@@ -492,7 +501,7 @@ function UploadTestCard({ student }) {
                                 h("span", { className: "file-card-name", title: item.originalName || item.filename }, item.originalName || item.filename),
                                 h("div", { className: "file-card-meta" },
                                     h("span", null, `${(item.size / 1024).toFixed(1)} KB`),
-                                    h("a", { href: item.url, target: "_blank", className: "view-link" }, h("i", { className: "fa-solid fa-arrow-up-right-from-square" }), " Open")
+                                    h("a", { href: getFileUrl(item.url), target: "_blank", className: "view-link" }, h("i", { className: "fa-solid fa-arrow-up-right-from-square" }), " Open")
                                 )
                             )
                         )
