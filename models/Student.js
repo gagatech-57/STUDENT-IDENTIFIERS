@@ -12,19 +12,20 @@ const studentSchema = new mongoose.Schema({
         required: true,
         uppercase: true,
         trim: true,
-        minlength: 3,
-        maxlength: 20
+        minlength: 2,
+        maxlength: 50
     },
     age: {
         type: Number,
         required: true,
-        min: 18,
-        max: 23
+        min: 16,
+        max: 100
     },
     department: {
         type: String,
         required: true,
         uppercase: true,
+        trim: true
     },
     email: {
         type: String,
@@ -36,9 +37,7 @@ const studentSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
-        minlength: 60,
-        maxlength: 72
+        required: true
     }
 });
 

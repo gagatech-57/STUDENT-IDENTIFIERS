@@ -1,11 +1,12 @@
 const Upload = require("../models/Upload");
 
-const formatFileDetails = (file) => ({
+const formatFileDetails = (file, uploadedBy = "Guest") => ({
     filename: file.filename,
     originalName: file.originalname,
     mimeType: file.mimetype,
     size: file.size,
     url: `/uploads/${file.filename}`,
+    uploadedBy: uploadedBy,
     uploadedAt: new Date()
 });
 
@@ -17,7 +18,12 @@ const checkUploadStatus = (req, res) => {
 
 const getUploadedFilesController = async (req, res) => {
     try {
-        const files = await Upload.find().sort({ uploadedAt: -1 }).limit(20);
+        const query = {};
+        if (req.query.uploadedBy) {
+            query.uploadedBy = req.query.uploadedBy.toLowerCase().trim();
+        }
+
+        const files = await Upload.find(query).sort({ uploadedAt: -1 }).limit(50);
         res.status(200).json({
             message: "Uploaded files fetched successfully from MongoDB",
             count: files.length,
@@ -38,7 +44,8 @@ const uploadSinglePhotoController = async (req, res) => {
         });
     }
 
-    const fileData = formatFileDetails(req.file);
+    const uploadedBy = req.body.uploadedBy ? req.body.uploadedBy.toLowerCase().trim() : "Guest";
+    const fileData = formatFileDetails(req.file, uploadedBy);
 
     try {
         const savedFile = await Upload.create(fileData);
@@ -63,7 +70,8 @@ const uploadArrayPhotosController = async (req, res) => {
         });
     }
 
-    const filesDetails = req.files.map(formatFileDetails);
+    const uploadedBy = req.body.uploadedBy ? req.body.uploadedBy.toLowerCase().trim() : "Guest";
+    const filesDetails = req.files.map(f => formatFileDetails(f, uploadedBy));
 
     try {
         const savedFiles = await Upload.insertMany(filesDetails);
@@ -90,13 +98,14 @@ const uploadFieldsPhotoResumeController = async (req, res) => {
         });
     }
 
+    const uploadedBy = req.body.uploadedBy ? req.body.uploadedBy.toLowerCase().trim() : "Guest";
     const toSave = [];
 
     if (req.files.photo && req.files.photo.length > 0) {
-        toSave.push(formatFileDetails(req.files.photo[0]));
+        toSave.push(formatFileDetails(req.files.photo[0], uploadedBy));
     }
     if (req.files.resume && req.files.resume.length > 0) {
-        toSave.push(formatFileDetails(req.files.resume[0]));
+        toSave.push(formatFileDetails(req.files.resume[0], uploadedBy));
     }
 
     try {

@@ -1,15 +1,33 @@
 const API = "http://localhost:3000";
 const { createElement: h, useEffect, useState } = React;
 
-function LoginForm({ onLogin }) {
+function AuthForm({ onLogin }) {
+    const [isRegister, setIsRegister] = useState(false);
+    
+    // Login Fields
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    
+    // Register Fields
+    const [name, setName] = useState("");
+    const [age, setAge] = useState("");
+    const [department, setDepartment] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
     const [error, setError] = useState("");
+    const [successMsg, setSuccessMsg] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    async function handleSubmit(event) {
+    function toggleMode(mode) {
+        setIsRegister(mode);
+        setError("");
+        setSuccessMsg("");
+    }
+
+    async function handleLoginSubmit(event) {
         event.preventDefault();
         setError("");
+        setSuccessMsg("");
 
         if (email.trim() === "" || password.trim() === "") {
             setError("Please enter Email & Password");
@@ -18,22 +36,15 @@ function LoginForm({ onLogin }) {
 
         try {
             setIsLoading(true);
-
             const response = await fetch(`${API}/login`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    email: email.trim(),
-                    password: password.trim()
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: email.trim(), password: password.trim() })
             });
 
             const data = await response.json();
-
             if (!response.ok) {
-                setError(data.message);
+                setError(data.message || "Login failed");
                 return;
             }
 
@@ -45,45 +56,187 @@ function LoginForm({ onLogin }) {
         }
     }
 
+    async function handleRegisterSubmit(event) {
+        event.preventDefault();
+        setError("");
+        setSuccessMsg("");
+
+        if (!name.trim() || !age.trim() || !department.trim() || !email.trim() || !password || !confirmPassword) {
+            setError("Please fill all required fields");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            setError("Passwords do not match! Please check both password fields.");
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+            const response = await fetch(`${API}/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: name.trim(),
+                    age: Number(age),
+                    department: department.trim(),
+                    email: email.trim(),
+                    password: password.trim()
+                })
+            });
+
+            const data = await response.json();
+            if (!response.ok) {
+                setError(data.message || "Registration failed");
+                return;
+            }
+
+            setSuccessMsg("Account Created Successfully! Logging you in...");
+            setTimeout(() => {
+                onLogin(data.student, data.token);
+            }, 1000);
+        } catch (err) {
+            setError("Server Connection Error during Registration");
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     return h(
         "section",
-        { className: "login-box" },
-        h("h1", null, "Student Login"),
+        { className: "auth-box" },
         h(
-            "form",
-            { onSubmit: handleSubmit },
+            "div",
+            { className: "auth-tabs" },
             h(
-                "div",
-                { className: "input-box" },
-                h("i", { className: "fa fa-envelope" }),
-                h("input", {
-                    type: "email",
-                    value: email,
-                    placeholder: "Enter Email",
-                    onChange: (event) => setEmail(event.target.value)
-                })
-            ),
-            h(
-                "div",
-                { className: "input-box" },
-                h("i", { className: "fa fa-lock" }),
-                h("input", {
-                    type: "password",
-                    value: password,
-                    placeholder: "Enter Password",
-                    onChange: (event) => setPassword(event.target.value)
-                })
+                "button",
+                {
+                    type: "button",
+                    className: `auth-tab-btn ${!isRegister ? "active" : ""}`,
+                    onClick: () => toggleMode(false)
+                },
+                "Login"
             ),
             h(
                 "button",
                 {
-                    type: "submit",
-                    disabled: isLoading
+                    type: "button",
+                    className: `auth-tab-btn ${isRegister ? "active" : ""}`,
+                    onClick: () => toggleMode(true)
                 },
-                isLoading ? "Logging in..." : "Login"
+                "Create Account"
+            )
+        ),
+        h("h1", null, isRegister ? "Create Account" : "Student Login"),
+        !isRegister
+            ? h(
+                "form",
+                { onSubmit: handleLoginSubmit },
+                h(
+                    "div",
+                    { className: "input-box" },
+                    h("i", { className: "fa fa-envelope" }),
+                    h("input", {
+                        type: "email",
+                        value: email,
+                        placeholder: "Enter Email",
+                        onChange: (e) => setEmail(e.target.value)
+                    })
+                ),
+                h(
+                    "div",
+                    { className: "input-box" },
+                    h("i", { className: "fa fa-lock" }),
+                    h("input", {
+                        type: "password",
+                        value: password,
+                        placeholder: "Enter Password",
+                        onChange: (e) => setPassword(e.target.value)
+                    })
+                ),
+                h(
+                    "button",
+                    { type: "submit", disabled: isLoading, className: "auth-submit-btn" },
+                    isLoading ? "Logging in..." : "Login"
+                )
+            )
+            : h(
+                "form",
+                { onSubmit: handleRegisterSubmit },
+                h(
+                    "div",
+                    { className: "input-box" },
+                    h("i", { className: "fa-solid fa-user" }),
+                    h("input", {
+                        type: "text",
+                        value: name,
+                        placeholder: "Full Name",
+                        onChange: (e) => setName(e.target.value)
+                    })
+                ),
+                h(
+                    "div",
+                    { className: "input-box" },
+                    h("i", { className: "fa-solid fa-graduation-cap" }),
+                    h("input", {
+                        type: "text",
+                        value: department,
+                        placeholder: "Department (e.g. Computer Science)",
+                        onChange: (e) => setDepartment(e.target.value)
+                    })
+                ),
+                h(
+                    "div",
+                    { className: "input-box" },
+                    h("i", { className: "fa-solid fa-calendar" }),
+                    h("input", {
+                        type: "number",
+                        value: age,
+                        placeholder: "Age",
+                        onChange: (e) => setAge(e.target.value)
+                    })
+                ),
+                h(
+                    "div",
+                    { className: "input-box" },
+                    h("i", { className: "fa-solid fa-envelope" }),
+                    h("input", {
+                        type: "email",
+                        value: email,
+                        placeholder: "Email Address",
+                        onChange: (e) => setEmail(e.target.value)
+                    })
+                ),
+                h(
+                    "div",
+                    { className: "input-box" },
+                    h("i", { className: "fa-solid fa-lock" }),
+                    h("input", {
+                        type: "password",
+                        value: password,
+                        placeholder: "Password",
+                        onChange: (e) => setPassword(e.target.value)
+                    })
+                ),
+                h(
+                    "div",
+                    { className: "input-box" },
+                    h("i", { className: "fa-solid fa-shield-halved" }),
+                    h("input", {
+                        type: "password",
+                        value: confirmPassword,
+                        placeholder: "Confirm Password (re-type password)",
+                        onChange: (e) => setConfirmPassword(e.target.value)
+                    })
+                ),
+                h(
+                    "button",
+                    { type: "submit", disabled: isLoading, className: "auth-submit-btn" },
+                    isLoading ? "Creating Account..." : "Create Account & Login"
+                )
             ),
-            h("p", { id: "error" }, error)
-        )
+        error && h("p", { id: "error" }, error),
+        successMsg && h("p", { className: "success-text" }, successMsg)
     );
 }
 
@@ -100,7 +253,22 @@ function StudentDashboard({ student, onLogout }) {
                 h("span", { className: "profile-kicker" }, "Student Portal"),
                 h("h1", null, "Profile Dashboard")
             ),
-            h("span", { className: "status-pill" }, "Active")
+            h(
+                "div",
+                { className: "header-actions" },
+                h("span", { className: "status-pill" }, "Active"),
+                h(
+                    "button",
+                    {
+                        id: "topLogoutBtn",
+                        type: "button",
+                        onClick: onLogout,
+                        title: "Logout of session"
+                    },
+                    h("i", { className: "fa-solid fa-door-open" }),
+                    " Logout"
+                )
+            )
         ),
         h(
             "div",
@@ -145,27 +313,18 @@ function StudentDashboard({ student, onLogout }) {
                     value: student.email
                 })
             ),
-            h(UploadTestCard, null),
+            h(UploadTestCard, { student }),
             h(
                 "div",
                 { className: "profile-footer" },
                 h("div", { className: "barcode" }),
-                h(
-                    "button",
-                    {
-                        id: "logoutBtn",
-                        type: "button",
-                        onClick: onLogout
-                    },
-                    "Logout"
-                ),
-                h("span", { className: "profile-code" }, "COSMIC ACCESS")
+                h("span", { className: "profile-code" }, `LOGGED IN: ${student.email.toUpperCase()}`)
             )
         )
     );
 }
 
-function UploadTestCard() {
+function UploadTestCard({ student }) {
     const [file, setFile] = useState(null);
     const [uploadMsg, setUploadMsg] = useState("");
     const [isUploading, setIsUploading] = useState(false);
@@ -173,12 +332,14 @@ function UploadTestCard() {
     const [isDragging, setIsDragging] = useState(false);
 
     useEffect(() => {
-        fetchStoredFiles();
-    }, []);
+        if (student && student.email) {
+            fetchUserFiles(student.email);
+        }
+    }, [student]);
 
-    async function fetchStoredFiles() {
+    async function fetchUserFiles(userEmail) {
         try {
-            const res = await fetch(`${API}/upload/files`);
+            const res = await fetch(`${API}/upload/files?uploadedBy=${encodeURIComponent(userEmail)}`);
             if (res.ok) {
                 const data = await res.json();
                 if (data.files) {
@@ -201,6 +362,9 @@ function UploadTestCard() {
 
         const formData = new FormData();
         formData.append("photo", file);
+        if (student && student.email) {
+            formData.append("uploadedBy", student.email);
+        }
 
         try {
             setIsUploading(true);
@@ -217,7 +381,7 @@ function UploadTestCard() {
                 setFile(null);
                 const fileInput = document.getElementById("uploadInput");
                 if (fileInput) fileInput.value = "";
-                fetchStoredFiles();
+                fetchUserFiles(student.email);
             }
         } catch (err) {
             setUploadMsg("Server connection error during upload");
@@ -297,43 +461,51 @@ function UploadTestCard() {
             h("i", { className: uploadMsg.includes("working") || uploadMsg.includes("success") || uploadMsg.includes("uploaded") ? "fa-solid fa-circle-check" : "fa-solid fa-circle-exclamation" }),
             h("span", null, uploadMsg)
         ),
-        savedFiles.length > 0 && h(
+        h(
             "div",
             { className: "stored-files-section" },
-            h("h4", null, h("i", { className: "fa-solid fa-images" }), ` Stored Files in MongoDB (${savedFiles.length})`),
-            h(
-                "div",
-                { className: "files-grid" },
-                savedFiles.map((item, index) =>
-                    h(
-                        "div",
-                        { key: item._id || index, className: "file-card" },
-                        item.mimeType && item.mimeType.startsWith("image/")
-                            ? h("div", { className: "file-card-preview" },
-                                h("img", { src: item.url, alt: item.originalName || "Uploaded File" })
-                            )
-                            : h("div", { className: "file-card-icon" },
-                                h("i", { className: "fa-solid fa-file-lines" })
-                            ),
+            h("h4", null, h("i", { className: "fa-solid fa-images" }), ` My Uploaded Files (${savedFiles.length})`),
+            savedFiles.length > 0
+                ? h(
+                    "div",
+                    { className: "files-grid" },
+                    savedFiles.map((item, index) =>
                         h(
                             "div",
-                            { className: "file-card-details" },
+                            { key: item._id || index, className: "file-card" },
+                            item.mimeType && item.mimeType.startsWith("image/")
+                                ? h("div", { className: "file-card-preview" },
+                                    h("img", { src: item.url, alt: item.originalName || "Uploaded File" })
+                                )
+                                : h("div", { className: "file-card-icon" },
+                                    h("i", { className: "fa-solid fa-file-lines" })
+                                ),
                             h(
                                 "div",
-                                { className: "file-card-time-badge" },
-                                h("i", { className: "fa-regular fa-clock" }),
-                                " ",
-                                formatUploadDateTime(item.uploadedAt)
-                            ),
-                            h("span", { className: "file-card-name", title: item.originalName || item.filename }, item.originalName || item.filename),
-                            h("div", { className: "file-card-meta" },
-                                h("span", null, `${(item.size / 1024).toFixed(1)} KB`),
-                                h("a", { href: item.url, target: "_blank", className: "view-link" }, h("i", { className: "fa-solid fa-arrow-up-right-from-square" }), " Open")
+                                { className: "file-card-details" },
+                                h(
+                                    "div",
+                                    { className: "file-card-time-badge" },
+                                    h("i", { className: "fa-regular fa-clock" }),
+                                    " ",
+                                    formatUploadDateTime(item.uploadedAt)
+                                ),
+                                h("span", { className: "file-card-name", title: item.originalName || item.filename }, item.originalName || item.filename),
+                                h("div", { className: "file-card-meta" },
+                                    h("span", null, `${(item.size / 1024).toFixed(1)} KB`),
+                                    h("a", { href: item.url, target: "_blank", className: "view-link" }, h("i", { className: "fa-solid fa-arrow-up-right-from-square" }), " Open")
+                                )
                             )
                         )
                     )
                 )
-            )
+                : h(
+                    "div",
+                    { className: "empty-files-box" },
+                    h("i", { className: "fa-regular fa-folder-open empty-icon" }),
+                    h("p", null, `No files uploaded by ${student ? student.email : "you"} yet.`),
+                    h("span", null, "Upload an image above to see it appear here!")
+                )
         )
     );
 }
@@ -407,7 +579,7 @@ function App() {
                 student,
                 onLogout: handleLogout
             })
-            : h(LoginForm, {
+            : h(AuthForm, {
                 onLogin: handleLogin
             })
     );
