@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmic Student Portal & File Vault</title>
+    <title>Student Portal & File Vault (React.js)</title>
     <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,15 +15,12 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Background Animated Glass Glow Elements -->
-    <div class="glass-bg-orb orb-1"></div>
-    <div class="glass-bg-orb orb-2"></div>
-    <div class="glass-bg-orb orb-3"></div>
-
     <div id="root"></div>
 
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="app.js"></script>
+    <!-- React 18 & Babel standalone for JSX -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel" src="app.js"></script>
 </body>
 </html>
