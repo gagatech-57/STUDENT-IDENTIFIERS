@@ -411,8 +411,7 @@ function UploadTestCard({ student }) {
         "div",
         { className: "upload-box" },
         h("div", { className: "upload-header" },
-            h("h3", null, h("i", { className: "fa-solid fa-cloud-arrow-up" }), " File & Image Upload"),
-            h("span", { className: "mongo-badge" }, h("i", { className: "fa-solid fa-database" }), " MongoDB Connected")
+            h("h3", null, h("i", { className: "fa-solid fa-cloud-arrow-up" }), " File & Image Upload")
         ),
         h(
             "form",
@@ -451,8 +450,8 @@ function UploadTestCard({ student }) {
                     disabled: isUploading || !file
                 },
                 isUploading
-                    ? h("span", { className: "btn-flex" }, h("i", { className: "fa-solid fa-spinner fa-spin" }), " Saving to MongoDB...")
-                    : h("span", { className: "btn-flex" }, h("i", { className: "fa-solid fa-upload" }), " Upload & Save to DB")
+                    ? h("span", { className: "btn-flex" }, h("i", { className: "fa-solid fa-spinner fa-spin" }), " Uploading file...")
+                    : h("span", { className: "btn-flex" }, h("i", { className: "fa-solid fa-upload" }), " Upload File")
             )
         ),
         uploadMsg && h(
