@@ -1,5 +1,5 @@
 /**
- * DashboardPage Component displaying profile details, user uploads, and Axios API Tester
+ * DashboardPage Component displaying profile details and user uploads
  */
 
 import { Navbar } from "../components/Navbar.jsx";
@@ -7,7 +7,6 @@ import { Footer } from "../components/Footer.jsx";
 import { InfoTile } from "../components/InfoTile.jsx";
 import { Dropzone } from "../components/Dropzone.jsx";
 import { FileCard } from "../components/FileCard.jsx";
-import { AxiosApiTester } from "../components/AxiosApiTester.jsx";
 
 const ReactObj = typeof React !== "undefined" ? React : (window.React || {});
 const { useState } = ReactObj;
@@ -97,9 +96,6 @@ export function DashboardPage({ student, onLogout, uploadsState }) {
                         )}
                     </div>
                 </div>
-
-                {/* Axios Backend API Tester Section */}
-                <AxiosApiTester />
 
                 <Footer studentEmail={student.email} />
             </div>
