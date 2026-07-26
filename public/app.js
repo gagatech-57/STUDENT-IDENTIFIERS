@@ -4,7 +4,14 @@
  */
 
 const { useState, useEffect, useRef, useCallback } = React;
-const { HashRouter, Routes, Route, Navigate } = ReactRouterDOM;
+
+const RouterCore = typeof ReactRouter !== "undefined" ? ReactRouter : (window.ReactRouter || {});
+const RouterDOM = typeof ReactRouterDOM !== "undefined" ? ReactRouterDOM : (window.ReactRouterDOM || {});
+
+const HashRouter = RouterDOM.HashRouter || RouterCore.HashRouter;
+const Routes = RouterDOM.Routes || RouterCore.Routes;
+const Route = RouterDOM.Route || RouterCore.Route;
+const Navigate = RouterDOM.Navigate || RouterCore.Navigate;
 
 // Centralized API Configuration
 const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
@@ -802,6 +809,29 @@ function App() {
     } = useAuth();
 
     const uploadsState = useUploads(student ? student.email : null);
+
+    const hasRouter = !!(HashRouter && Routes && Route);
+
+    if (!hasRouter) {
+        return (
+            <main className="container">
+                {isAuthenticated ? (
+                    <DashboardPage
+                        student={student}
+                        onLogout={logout}
+                        uploadsState={uploadsState}
+                    />
+                ) : (
+                    <LoginPage
+                        onLogin={login}
+                        onRegister={register}
+                        isLoading={authLoading}
+                        authError={authError}
+                    />
+                )}
+            </main>
+        );
+    }
 
     return (
         <HashRouter>
