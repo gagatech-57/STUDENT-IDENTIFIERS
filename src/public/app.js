@@ -1,17 +1,9 @@
 /**
  * Full React.js Single Page Application
- * Built with React 18, React Router DOM, and Axios
+ * Built with React 18, State-based Hash Routing, and Axios
  */
 
 const { useState, useEffect, useRef, useCallback } = React;
-
-const RouterCore = typeof ReactRouter !== "undefined" ? ReactRouter : (window.ReactRouter || {});
-const RouterDOM = typeof ReactRouterDOM !== "undefined" ? ReactRouterDOM : (window.ReactRouterDOM || {});
-
-const HashRouter = RouterDOM.HashRouter || RouterCore.HashRouter;
-const Routes = RouterDOM.Routes || RouterCore.Routes;
-const Route = RouterDOM.Route || RouterCore.Route;
-const Navigate = RouterDOM.Navigate || RouterCore.Navigate;
 
 // Centralized API Configuration
 const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
@@ -787,15 +779,6 @@ function DashboardPage({ student, onLogout, uploadsState }) {
     );
 }
 
-function NotFoundPage() {
-    return (
-        <div style={{ textAlignment: "center", color: "#ffffff", padding: "50px 20px" }}>
-            <h2>404 - Page Not Found</h2>
-            <p>The page you are looking for does not exist.</p>
-        </div>
-    );
-}
-
 /* Root App Component */
 function App() {
     const {
@@ -808,78 +791,56 @@ function App() {
         logout
     } = useAuth();
 
+    const [currentHash, setCurrentHash] = useState(() => window.location.hash || "#/login");
+
+    useEffect(() => {
+        const handleHashChange = () => {
+            setCurrentHash(window.location.hash || "#/login");
+        };
+        window.addEventListener("hashchange", handleHashChange);
+        return () => window.removeEventListener("hashchange", handleHashChange);
+    }, []);
+
     const uploadsState = useUploads(student ? student.email : null);
 
-    const hasRouter = !!(HashRouter && Routes && Route);
-
-    if (!hasRouter) {
-        return (
-            <main className="container">
-                {isAuthenticated ? (
-                    <DashboardPage
-                        student={student}
-                        onLogout={logout}
-                        uploadsState={uploadsState}
-                    />
-                ) : (
-                    <LoginPage
-                        onLogin={login}
-                        onRegister={register}
-                        isLoading={authLoading}
-                        authError={authError}
-                    />
-                )}
-            </main>
-        );
-    }
+    useEffect(() => {
+        if (isAuthenticated) {
+            if (currentHash !== "#/dashboard") {
+                window.location.hash = "#/dashboard";
+            }
+        } else {
+            if (currentHash === "#/dashboard") {
+                window.location.hash = "#/login";
+            }
+        }
+    }, [isAuthenticated, currentHash]);
 
     return (
-        <HashRouter>
-            <main className="container">
-                <Routes>
-                    <Route
-                        path="/"
-                        element={
-                            isAuthenticated ? (
-                                <Navigate to="/dashboard" replace />
-                            ) : (
-                                <Navigate to="/login" replace />
-                            )
-                        }
-                    />
-                    <Route
-                        path="/login"
-                        element={
-                            isAuthenticated ? (
-                                <Navigate to="/dashboard" replace />
-                            ) : (
-                                <LoginPage
-                                    onLogin={login}
-                                    onRegister={register}
-                                    isLoading={authLoading}
-                                    authError={authError}
-                                />
-                            )
-                        }
-                    />
-                    <Route
-                        path="/dashboard"
-                        element={
-                            isAuthenticated ? (
-                                <DashboardPage
-                                    student={student}
-                                    onLogout={logout}
-                                    uploadsState={uploadsState}
-                                />
-                            ) : (
-                                <Navigate to="/login" replace />
-                            )
-                        }
-                    />
-                    <Route path="*" element={<NotFoundPage />} />
-                </Routes>
-            </main>
-        </HashRouter>
+        <main className="container">
+            {isAuthenticated ? (
+                <DashboardPage
+                    student={student}
+                    onLogout={() => {
+                        logout();
+                        window.location.hash = "#/login";
+                    }}
+                    uploadsState={uploadsState}
+                />
+            ) : (
+                <LoginPage
+                    onLogin={async (email, pwd) => {
+                        await login(email, pwd);
+                        window.location.hash = "#/dashboard";
+                    }}
+                    onRegister={async (data) => {
+                        await register(data);
+                        window.location.hash = "#/dashboard";
+                    }}
+                    isLoading={authLoading}
+                    authError={authError}
+                />
+            )}
+        </main>
     );
 }
 

@@ -44,12 +44,15 @@ src/
 ## Getting Started
 
 ### Installation
+
 ```bash
 npm install
 ```
 
 ### Environment Setup
+
 Create a `.env` file based on `.env.example`:
+
 ```env
 PORT=3000
 MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/studentdb
@@ -57,6 +60,7 @@ JWT_SECRET=your_secret_key
 ```
 
 ### Running the Server
+
 ```bash
 # Production mode
 npm start
@@ -68,10 +72,12 @@ npm run dev
 ## API Endpoints Summary
 
 ### Authentication
+
 - `POST /register` - Create new student account
 - `POST /login` - Authenticate student and get JWT token
 
 ### Students (Protected with Bearer Token)
+
 - `GET /students` - List all students
 - `GET /students/:studentId` - Get student by ID
 - `POST /students` - Create new student record
@@ -79,6 +85,7 @@ npm run dev
 - `DELETE /students/:studentId` - Remove student record
 
 ### Uploads
+
 - `GET /upload` - Health check status
 - `GET /upload/files` - List uploaded files from MongoDB
 - `POST /upload` - Upload single file (`photo` field)
