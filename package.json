@@ -1,17 +1,21 @@
 {
   "name": "mongodb-ms",
   "version": "1.0.0",
-  "description": "Clean, scalable MERN Stack Node.js Express MongoDB REST API",
+  "description": "Clean, scalable MERN Stack Node.js Express MongoDB REST API with Vite React Frontend",
   "main": "src/server.js",
+  "type": "commonjs",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "node src/server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.5.2",
+    "axios": "^1.6.8",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -20,6 +24,11 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.4",
     "multer": "^2.2.0",
-    "react-router-dom": "^7.11.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.2.0"
   }
 }

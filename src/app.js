@@ -22,25 +22,22 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Resolve static public directory
-let publicPath = path.join(__dirname, "public");
-if (!fs.existsSync(publicPath)) {
-    publicPath = path.resolve(process.cwd(), "src", "public");
-}
-if (!fs.existsSync(publicPath)) {
-    publicPath = path.resolve(process.cwd(), "public");
+// Resolve static build/dist directory vs public directory
+let distPath = path.resolve(process.cwd(), "dist");
+if (!fs.existsSync(distPath)) {
+    distPath = path.join(__dirname, "public");
 }
 
 // Resolve uploads directory
 const isVercel = !!process.env.VERCEL;
 const uploadsPath = isVercel ? path.join(os.tmpdir(), "uploads") : path.join(__dirname, "uploads");
 
-app.use(express.static(publicPath));
+app.use(express.static(distPath));
 app.use("/uploads", express.static(uploadsPath));
 
 // Static index HTML route
 app.get(["/", "/login"], (req, res) => {
-    const indexPath = path.join(publicPath, "index.html");
+    const indexPath = path.join(distPath, "index.html");
     if (fs.existsSync(indexPath)) {
         return res.sendFile(indexPath);
     }
