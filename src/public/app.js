@@ -8,13 +8,19 @@ const { useState, useEffect, useRef, useCallback } = React;
 // Centralized API Configuration
 const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://localhost:3000"
-    : "https://server-testing-skra.onrender.com";
+    : (window.location.origin || "");
 
-function getFileUrl(url) {
-    if (!url) return "";
-    if (url.startsWith("http://") || url.startsWith("https://")) return url;
-    return `${API_BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+function getFileUrl(item) {
+    if (!item) return "";
+    if (typeof item === "object") {
+        if (item.dataUrl) return item.dataUrl;
+        item = item.url;
+    }
+    if (!item) return "";
+    if (item.startsWith("data:") || item.startsWith("http://") || item.startsWith("https://")) return item;
+    return `${API_BASE_URL}${item.startsWith("/") ? "" : "/"}${item}`;
 }
+
 
 function formatUploadDateTime(dateString) {
     if (!dateString) return "Just now";
@@ -323,13 +329,14 @@ function InfoTile({ icon, label, value }) {
 }
 
 function FileCard({ item }) {
-    const isImage = item.mimeType && item.mimeType.startsWith("image/");
+    const isImage = (item.mimeType && item.mimeType.startsWith("image/")) || (item.dataUrl && item.dataUrl.startsWith("data:image"));
+    const src = getFileUrl(item);
 
     return (
         <div className="file-card">
             {isImage ? (
                 <div className="file-card-preview">
-                    <img src={getFileUrl(item.url)} alt={item.originalName || "Uploaded File"} />
+                    <img src={src} alt={item.originalName || "Uploaded File"} />
                 </div>
             ) : (
                 <div className="file-card-icon">
@@ -346,7 +353,7 @@ function FileCard({ item }) {
 
                 <div className="file-card-meta">
                     <span>{(item.size / 1024).toFixed(1)} KB</span>
-                    <a href={getFileUrl(item.url)} target="_blank" rel="noopener noreferrer" className="view-link">
+                    <a href={src} target="_blank" rel="noopener noreferrer" className="view-link">
                         <i className="fa-solid fa-arrow-up-right-from-square"></i> Open
                     </a>
                 </div>
@@ -354,6 +361,7 @@ function FileCard({ item }) {
         </div>
     );
 }
+
 
 function Dropzone({ file, setFile, onUploadSubmit, isUploading }) {
     const [isDragging, setIsDragging] = useState(false);

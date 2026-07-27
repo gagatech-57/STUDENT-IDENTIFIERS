@@ -21,6 +21,9 @@ const uploadSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    dataUrl: {
+        type: String
+    },
     uploadedBy: {
         type: String,
         default: "Guest"
@@ -30,6 +33,7 @@ const uploadSchema = new mongoose.Schema({
         default: Date.now
     }
 });
+
 
 module.exports = mongoose.model("Upload", uploadSchema);
 module.exports.uploadSchema = uploadSchema;

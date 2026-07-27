@@ -1,14 +1,58 @@
+const fs = require("fs");
+const path = require("path");
 const { getModels, getDbStatus } = require("../config/db");
 
-const formatFileDetails = (file, uploadedBy = "Guest") => ({
-    filename: file.filename,
-    originalName: file.originalname,
-    mimeType: file.mimetype,
-    size: file.size,
-    url: `/uploads/${file.filename}`,
-    uploadedBy: uploadedBy,
-    uploadedAt: new Date()
-});
+const getLocalFileBase64 = (filename, mimeType) => {
+    try {
+        const possiblePaths = [
+            path.join(__dirname, "../uploads", filename),
+            path.join(__dirname, "../public/uploads", filename),
+            path.resolve(process.cwd(), "src/uploads", filename),
+            path.resolve(process.cwd(), "uploads", filename)
+        ];
+
+        for (const p of possiblePaths) {
+            if (fs.existsSync(p)) {
+                const buf = fs.readFileSync(p);
+                const type = mimeType || "image/jpeg";
+                return `data:${type};base64,${buf.toString("base64")}`;
+            }
+        }
+    } catch (e) {
+        console.warn(`Base64 conversion failed for ${filename}:`, e.message);
+    }
+    return null;
+};
+
+const formatFileDetails = (file, uploadedBy = "Guest") => {
+    let dataUrl = null;
+
+    if (file.path && fs.existsSync(file.path)) {
+        try {
+            const buf = fs.readFileSync(file.path);
+            dataUrl = `data:${file.mimetype};base64,${buf.toString("base64")}`;
+        } catch (e) {
+            console.warn("Base64 format error:", e.message);
+        }
+    } else if (file.buffer) {
+        dataUrl = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+    }
+
+    if (!dataUrl && file.filename) {
+        dataUrl = getLocalFileBase64(file.filename, file.mimetype);
+    }
+
+    return {
+        filename: file.filename,
+        originalName: file.originalname,
+        mimeType: file.mimetype,
+        size: file.size,
+        url: `/uploads/${file.filename}`,
+        dataUrl: dataUrl,
+        uploadedBy: uploadedBy,
+        uploadedAt: new Date()
+    };
+};
 
 const saveDualUpload = async (fileDetails) => {
     const { AtlasUpload, LocalUpload } = getModels();
@@ -80,27 +124,43 @@ const getUploadedFilesService = async (uploadedByFilter) => {
     // Merge files from both databases and tag locations
     const fileMap = new Map();
 
-    atlasFiles.forEach(f => {
-        f.locations = ["Online Atlas"];
-        fileMap.set(f.filename, f);
-    });
+    const processDoc = (f, locationName) => {
+        // If doc is missing dataUrl, attempt backfilling from local disk
+        if (!f.dataUrl) {
+            const base64 = getLocalFileBase64(f.filename, f.mimeType);
+            if (base64) {
+                f.dataUrl = base64;
+                // Backfill to DB in background
+                if (AtlasUpload) {
+                    AtlasUpload.updateOne({ filename: f.filename }, { $set: { dataUrl: base64 } }).catch(() => {});
+                }
+                if (LocalUpload) {
+                    LocalUpload.updateOne({ filename: f.filename }, { $set: { dataUrl: base64 } }).catch(() => {});
+                }
+            }
+        }
 
-    localFiles.forEach(f => {
         if (fileMap.has(f.filename)) {
             const existing = fileMap.get(f.filename);
-            if (!existing.locations.includes("Local MongoDB")) {
-                existing.locations.push("Local MongoDB");
+            if (!existing.locations.includes(locationName)) {
+                existing.locations.push(locationName);
+            }
+            if (!existing.dataUrl && f.dataUrl) {
+                existing.dataUrl = f.dataUrl;
             }
         } else {
-            f.locations = ["Local MongoDB"];
+            f.locations = [locationName];
             fileMap.set(f.filename, f);
         }
-    });
+    };
+
+    atlasFiles.forEach(f => processDoc(f, "Online Atlas"));
+    localFiles.forEach(f => processDoc(f, "Local MongoDB"));
 
     const combinedFiles = Array.from(fileMap.values()).sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
 
     return {
-        message: "Uploaded files fetched successfully from Dual MongoDB (Atlas + Local)",
+        message: "Uploaded files fetched successfully",
         dbStatus,
         count: combinedFiles.length,
         files: combinedFiles
@@ -112,17 +172,8 @@ const saveSinglePhotoService = async (file, rawUploadedBy) => {
     const fileData = formatFileDetails(file, uploadedBy);
     const result = await saveDualUpload(fileData);
 
-    let msg = "Photo uploaded successfully!";
-    if (result.savedTo.onlineAtlas && result.savedTo.localMongo) {
-        msg = "Photo uploaded and saved to BOTH Online Atlas & Local MongoDB successfully!";
-    } else if (result.savedTo.onlineAtlas) {
-        msg = "Photo uploaded and saved to Online Atlas MongoDB!";
-    } else if (result.savedTo.localMongo) {
-        msg = "Photo uploaded and saved to Local MongoDB!";
-    }
-
     return {
-        message: msg,
+        message: "Photo uploaded successfully!",
         file: result.savedFile,
         savedTo: result.savedTo,
         dbErrors: result.errors
@@ -134,18 +185,13 @@ const saveArrayPhotosService = async (files, rawUploadedBy) => {
     const filesDetails = files.map(f => formatFileDetails(f, uploadedBy));
 
     const savedResults = [];
-    let savedAtlasCount = 0;
-    let savedLocalCount = 0;
-
     for (const fDetail of filesDetails) {
         const res = await saveDualUpload(fDetail);
         savedResults.push(res.savedFile);
-        if (res.savedTo.onlineAtlas) savedAtlasCount++;
-        if (res.savedTo.localMongo) savedLocalCount++;
     }
 
     return {
-        message: `Photos uploaded and saved! (Atlas: ${savedAtlasCount}/${files.length}, Local: ${savedLocalCount}/${files.length})`,
+        message: "Photos uploaded successfully!",
         count: savedResults.length,
         files: savedResults
     };
@@ -169,7 +215,7 @@ const saveFieldsPhotoResumeService = async (files, rawUploadedBy) => {
     }
 
     return {
-        message: "Files uploaded and saved to Dual MongoDB successfully!",
+        message: "Files uploaded successfully!",
         files: savedResults
     };
 };
@@ -196,23 +242,37 @@ const syncUploadsService = async () => {
 
     // Sync Atlas -> Local
     for (const f of atlasFiles) {
+        if (!f.dataUrl) {
+            f.dataUrl = getLocalFileBase64(f.filename, f.mimeType);
+        }
         if (!localFilenames.has(f.filename)) {
             const cleanDoc = { ...f };
             delete cleanDoc._id;
             delete cleanDoc.__v;
             await LocalUpload.create(cleanDoc);
             syncedToLocal++;
+        } else {
+            if (f.dataUrl) {
+                await LocalUpload.updateOne({ filename: f.filename }, { $set: { dataUrl: f.dataUrl } }).catch(() => {});
+            }
         }
     }
 
     // Sync Local -> Atlas
     for (const f of localFiles) {
+        if (!f.dataUrl) {
+            f.dataUrl = getLocalFileBase64(f.filename, f.mimeType);
+        }
         if (!atlasFilenames.has(f.filename)) {
             const cleanDoc = { ...f };
             delete cleanDoc._id;
             delete cleanDoc.__v;
             await AtlasUpload.create(cleanDoc);
             syncedToAtlas++;
+        } else {
+            if (f.dataUrl) {
+                await AtlasUpload.updateOne({ filename: f.filename }, { $set: { dataUrl: f.dataUrl } }).catch(() => {});
+            }
         }
     }
 
