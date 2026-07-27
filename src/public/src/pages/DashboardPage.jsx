@@ -49,7 +49,6 @@ export function DashboardPage({ student, onLogout, uploadsState }) {
                     <div className="student-summary">
                         <span className="student-id">ID {student.studentId}</span>
                         <h2>{student.name}</h2>
-                        <p>{student.email}</p>
                     </div>
                 </div>
 

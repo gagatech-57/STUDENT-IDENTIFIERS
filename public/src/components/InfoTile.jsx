@@ -8,7 +8,7 @@ export function InfoTile({ icon, label, value }) {
             <i className={icon}></i>
             <div>
                 <strong>{label}</strong>
-                <span>{value || "N/A"}</span>
+                <span title={value}>{value || "N/A"}</span>
             </div>
         </article>
     );

@@ -300,7 +300,7 @@ function InfoTile({ icon, label, value }) {
         <div className="info-tile">
             <i className={icon}></i>
             <strong>{label}</strong>
-            <span>{value || "N/A"}</span>
+            <span title={value}>{value || "N/A"}</span>
         </div>
     );
 }
@@ -591,7 +591,6 @@ function DashboardPage({ student, onLogout, uploadsState }) {
                     <div className="student-summary">
                         <span className="student-id">ID {student.studentId}</span>
                         <h2>{student.name}</h2>
-                        <p>{student.email}</p>
                     </div>
                 </div>
 
