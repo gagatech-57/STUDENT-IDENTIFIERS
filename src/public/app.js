@@ -200,7 +200,7 @@ function useUploads(userEmail) {
 
         try {
             const data = await uploadSingleFile(selectedFile, userEmail);
-            setUploadMsg(data.message || "Upload successful!");
+            setUploadMsg("Photo uploaded successfully!");
             await loadFiles();
             return data;
         } catch (err) {
@@ -326,6 +326,7 @@ function FileCard({ item }) {
                 <span className="file-card-name" title={item.originalName || item.filename}>
                     {item.originalName || item.filename}
                 </span>
+
                 <div className="file-card-meta">
                     <span>{(item.size / 1024).toFixed(1)} KB</span>
                     <a href={getFileUrl(item.url)} target="_blank" rel="noopener noreferrer" className="view-link">
@@ -389,7 +390,6 @@ function Dropzone({ file, setFile, onUploadSubmit, isUploading }) {
         </form>
     );
 }
-
 
 /* Page Views */
 function LoginPage({ onLogin, onRegister, isLoading, authError }) {

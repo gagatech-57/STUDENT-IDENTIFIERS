@@ -1,16 +1,26 @@
 const path = require("path");
 const fs = require("fs");
+const os = require("os");
 const multer = require("multer");
 
-// Create uploads directory automatically if it does not exist
-const uploadDir = path.join(__dirname, "../uploads");
+// Configure upload directory (supports both local filesystem and Vercel serverless /tmp)
+const isVercel = !!process.env.VERCEL;
+const uploadDir = isVercel ? path.join(os.tmpdir(), "uploads") : path.join(__dirname, "../uploads");
+
 if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
+    try {
+        fs.mkdirSync(uploadDir, { recursive: true });
+    } catch (e) {
+        console.warn("Upload dir creation warning:", e.message);
+    }
 }
 
 // Configure disk storage using Date.now() for unique filenames
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
+        if (!fs.existsSync(uploadDir)) {
+            try { fs.mkdirSync(uploadDir, { recursive: true }); } catch (e) {}
+        }
         cb(null, uploadDir);
     },
     filename: (req, file, cb) => {

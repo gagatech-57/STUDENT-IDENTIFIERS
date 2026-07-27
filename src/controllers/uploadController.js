@@ -1,14 +1,41 @@
+const { getDbStatus } = require("../config/db");
 const {
     getUploadedFilesService,
     saveSinglePhotoService,
     saveArrayPhotosService,
-    saveFieldsPhotoResumeService
+    saveFieldsPhotoResumeService,
+    syncUploadsService
 } = require("../services/uploadService");
+const { syncStudentsService } = require("../services/studentService");
 
 const checkUploadStatus = (req, res) => {
     res.status(200).json({
-        message: "Upload is working"
+        message: "Upload Service is working",
+        dbStatus: getDbStatus()
     });
+};
+
+const getDbStatusController = (req, res) => {
+    res.status(200).json({
+        message: "Database Connection Status",
+        dbStatus: getDbStatus()
+    });
+};
+
+const syncDatabasesController = async (req, res, next) => {
+    try {
+        const uploadSync = await syncUploadsService();
+        const studentSync = await syncStudentsService();
+
+        return res.status(200).json({
+            message: "Dual Database Synchronization Complete",
+            uploadSync,
+            studentSync,
+            dbStatus: getDbStatus()
+        });
+    } catch (err) {
+        next(err);
+    }
 };
 
 const getUploadedFilesController = async (req, res, next) => {
@@ -70,6 +97,8 @@ const uploadFieldsPhotoResumeController = async (req, res, next) => {
 
 module.exports = {
     checkUploadStatus,
+    getDbStatusController,
+    syncDatabasesController,
     getUploadedFilesController,
     uploadSinglePhotoController,
     uploadArrayPhotosController,

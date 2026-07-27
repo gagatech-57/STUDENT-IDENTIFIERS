@@ -7,6 +7,8 @@ const {
 } = require("../middleware/uploadMiddleware");
 const {
     checkUploadStatus,
+    getDbStatusController,
+    syncDatabasesController,
     getUploadedFilesController,
     uploadSinglePhotoController,
     uploadArrayPhotosController,
@@ -16,6 +18,10 @@ const {
 // Test Upload Status (GET /upload or GET /upload/test)
 router.get("/", checkUploadStatus);
 router.get("/test", checkUploadStatus);
+
+// Database Health & Sync Status (GET /upload/db-status & POST /upload/sync)
+router.get("/db-status", getDbStatusController);
+router.post("/sync", syncDatabasesController);
 
 // Get Uploaded Files from MongoDB (GET /upload/files)
 router.get("/files", getUploadedFilesController);

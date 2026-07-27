@@ -1,4 +1,6 @@
 const path = require("path");
+const fs = require("fs");
+const os = require("os");
 const express = require("express");
 const cors = require("cors");
 
@@ -11,30 +13,45 @@ const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
 
-// Configure CORS
+// Configure CORS for local, render, and vercel deployments
 app.use(cors({
-    origin: ["http://localhost:3000", "http://localhost:5173", "https://server-testing-skra.onrender.com"]
+    origin: true,
+    credentials: true
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static assets & uploaded files
-const publicPath = path.join(__dirname, "public");
-const uploadsPath = path.join(__dirname, "uploads");
+// Resolve static public directory
+let publicPath = path.join(__dirname, "public");
+if (!fs.existsSync(publicPath)) {
+    publicPath = path.resolve(process.cwd(), "src", "public");
+}
+if (!fs.existsSync(publicPath)) {
+    publicPath = path.resolve(process.cwd(), "public");
+}
+
+// Resolve uploads directory
+const isVercel = !!process.env.VERCEL;
+const uploadsPath = isVercel ? path.join(os.tmpdir(), "uploads") : path.join(__dirname, "uploads");
 
 app.use(express.static(publicPath));
 app.use("/uploads", express.static(uploadsPath));
 
 // Static index HTML route
 app.get(["/", "/login"], (req, res) => {
-    res.sendFile(path.join(publicPath, "index.html"));
+    const indexPath = path.join(publicPath, "index.html");
+    if (fs.existsSync(indexPath)) {
+        return res.sendFile(indexPath);
+    }
+    return res.status(200).send("Student Portal API & UI is online");
 });
 
 // Test endpoint
 app.get("/test", (req, res) => {
     res.json({
-        message: "Server is Working"
+        message: "Server is Working",
+        environment: isVercel ? "Vercel Serverless" : "Standard Node.js Server"
     });
 });
 
