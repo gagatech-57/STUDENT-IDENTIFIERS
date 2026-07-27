@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const mongoose = require("mongoose");
 const { getModels, getDbStatus } = require("../config/db");
 
 const getLocalFileBase64 = (filename, mimeType) => {
@@ -125,12 +126,10 @@ const getUploadedFilesService = async (uploadedByFilter) => {
     const fileMap = new Map();
 
     const processDoc = (f, locationName) => {
-        // If doc is missing dataUrl, attempt backfilling from local disk
         if (!f.dataUrl) {
             const base64 = getLocalFileBase64(f.filename, f.mimeType);
             if (base64) {
                 f.dataUrl = base64;
-                // Backfill to DB in background
                 if (AtlasUpload) {
                     AtlasUpload.updateOne({ filename: f.filename }, { $set: { dataUrl: base64 } }).catch(() => {});
                 }
@@ -220,6 +219,74 @@ const saveFieldsPhotoResumeService = async (files, rawUploadedBy) => {
     };
 };
 
+const deleteUploadedFileService = async (fileId) => {
+    const { AtlasUpload, LocalUpload } = getModels();
+    let doc = null;
+    let deletedAtlas = null;
+    let deletedLocal = null;
+
+    const isId = mongoose.Types.ObjectId.isValid(fileId);
+
+    if (AtlasUpload) {
+        if (isId) {
+            doc = await AtlasUpload.findById(fileId);
+            if (doc) {
+                deletedAtlas = await AtlasUpload.findByIdAndDelete(fileId);
+            }
+        }
+        if (!doc) {
+            doc = await AtlasUpload.findOne({ filename: fileId });
+            if (doc) {
+                deletedAtlas = await AtlasUpload.deleteOne({ filename: fileId });
+            }
+        }
+    }
+
+    if (LocalUpload) {
+        let localDoc = null;
+        if (isId) {
+            localDoc = await LocalUpload.findById(fileId);
+            if (localDoc) {
+                deletedLocal = await LocalUpload.findByIdAndDelete(fileId).catch(() => {});
+            }
+        }
+        if (!localDoc && doc) {
+            deletedLocal = await LocalUpload.deleteOne({ filename: doc.filename }).catch(() => {});
+        } else if (!localDoc) {
+            localDoc = await LocalUpload.findOne({ filename: fileId });
+            if (localDoc) {
+                deletedLocal = await LocalUpload.deleteOne({ filename: fileId }).catch(() => {});
+            }
+        }
+
+        if (!doc) doc = localDoc;
+    }
+
+    if (!doc && !deletedAtlas && !deletedLocal) {
+        const error = new Error("File not found");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    if (doc && doc.filename) {
+        const targetPaths = [
+            path.join(__dirname, "../uploads", doc.filename),
+            path.resolve(process.cwd(), "src/uploads", doc.filename),
+            path.resolve(process.cwd(), "uploads", doc.filename)
+        ];
+        targetPaths.forEach(p => {
+            if (fs.existsSync(p)) {
+                try { fs.unlinkSync(p); } catch (e) {}
+            }
+        });
+    }
+
+    return {
+        success: true,
+        message: "Image / file deleted successfully!"
+    };
+};
+
 const syncUploadsService = async () => {
     const { AtlasUpload, LocalUpload } = getModels();
 
@@ -240,7 +307,6 @@ const syncUploadsService = async () => {
     let syncedToLocal = 0;
     let syncedToAtlas = 0;
 
-    // Sync Atlas -> Local
     for (const f of atlasFiles) {
         if (!f.dataUrl) {
             f.dataUrl = getLocalFileBase64(f.filename, f.mimeType);
@@ -258,7 +324,6 @@ const syncUploadsService = async () => {
         }
     }
 
-    // Sync Local -> Atlas
     for (const f of localFiles) {
         if (!f.dataUrl) {
             f.dataUrl = getLocalFileBase64(f.filename, f.mimeType);
@@ -290,5 +355,6 @@ module.exports = {
     saveSinglePhotoService,
     saveArrayPhotosService,
     saveFieldsPhotoResumeService,
+    deleteUploadedFileService,
     syncUploadsService
 };

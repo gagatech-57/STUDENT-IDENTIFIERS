@@ -98,6 +98,16 @@ async function uploadSingleFile(file, uploadedByEmail) {
     }
 }
 
+async function deleteUserUpload(fileId) {
+    try {
+        const response = await window.axios.delete(`${API_BASE_URL}/upload/${fileId}`);
+        return response.data;
+    } catch (err) {
+        throw new Error(err.response?.data?.message || err.message || "Failed to delete file");
+    }
+}
+
+
 /* Custom Hooks */
 function useAuth() {
     const [student, setStudent] = useState(() => {
@@ -217,6 +227,20 @@ function useUploads(userEmail) {
         }
     }, [userEmail, loadFiles]);
 
+    const deleteFile = useCallback(async (fileId) => {
+        setUploadMsg("");
+        setUploadError("");
+        try {
+            const data = await deleteUserUpload(fileId);
+            setUploadMsg(data.message || "File deleted successfully!");
+            await loadFiles();
+            return data;
+        } catch (err) {
+            setUploadError(err.message || "File deletion failed");
+            throw err;
+        }
+    }, [loadFiles]);
+
     return {
         files,
         isUploading,
@@ -226,9 +250,11 @@ function useUploads(userEmail) {
         setUploadMsg,
         setUploadError,
         upload,
+        deleteFile,
         reloadFiles: loadFiles
     };
 }
+
 
 /* UI Components */
 function Navbar({ student, onLogout }) {
@@ -328,7 +354,7 @@ function InfoTile({ icon, label, value }) {
     );
 }
 
-function FileCard({ item }) {
+function FileCard({ item, onDelete }) {
     const isImage = (item.mimeType && item.mimeType.startsWith("image/")) || (item.dataUrl && item.dataUrl.startsWith("data:image"));
     const src = getFileUrl(item);
 
@@ -352,15 +378,29 @@ function FileCard({ item }) {
                 </span>
 
                 <div className="file-card-meta">
-                    <span>{(item.size / 1024).toFixed(1)} KB</span>
                     <a href={src} target="_blank" rel="noopener noreferrer" className="view-link">
                         <i className="fa-solid fa-arrow-up-right-from-square"></i> Open
                     </a>
+                    {onDelete && (
+                        <button
+                            type="button"
+                            className="delete-card-btn"
+                            onClick={() => {
+                                if (window.confirm("Are you sure you want to delete this image?")) {
+                                    onDelete(item._id || item.filename);
+                                }
+                            }}
+                            title="Delete this file"
+                        >
+                            <i className="fa-solid fa-trash-can"></i> Delete
+                        </button>
+                    )}
                 </div>
             </div>
         </div>
     );
 }
+
 
 
 function Dropzone({ file, setFile, onUploadSubmit, isUploading }) {
@@ -650,8 +690,13 @@ function DashboardPage({ student, onLogout, uploadsState }) {
                         {files.length > 0 ? (
                             <div className="files-grid">
                                 {files.map((item, index) => (
-                                    <FileCard key={item._id || index} item={item} />
+                                    <FileCard
+                                        key={item._id || index}
+                                        item={item}
+                                        onDelete={(id) => uploadsState.deleteFile(id)}
+                                    />
                                 ))}
+
                             </div>
                         ) : (
                             <div className="empty-files-box">

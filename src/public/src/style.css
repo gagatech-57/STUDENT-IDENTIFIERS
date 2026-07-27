@@ -689,14 +689,10 @@ button:active {
     color: #ffffff;
     text-decoration: none;
     font-weight: 700;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    opacity: 0.8;
+    transition: color 0.3s ease;
 }
 
 .view-link:hover {
-    opacity: 1;
     text-decoration: underline;
 }
 
@@ -956,4 +952,29 @@ button:active {
         text-align: center;
     }
 }
+
+.delete-card-btn {
+    width: auto !important;
+    padding: 4px 10px !important;
+    border-radius: 8px !important;
+    font-size: 12px !important;
+    background: rgba(239, 68, 68, 0.15) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    color: #f87171 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    transition: all 0.25s ease !important;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.delete-card-btn:hover {
+    background: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: #ffffff !important;
+    transform: scale(1.06) !important;
+}
+
 

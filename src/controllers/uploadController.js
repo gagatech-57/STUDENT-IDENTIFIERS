@@ -4,6 +4,7 @@ const {
     saveSinglePhotoService,
     saveArrayPhotosService,
     saveFieldsPhotoResumeService,
+    deleteUploadedFileService,
     syncUploadsService
 } = require("../services/uploadService");
 const { syncStudentsService } = require("../services/studentService");
@@ -95,6 +96,19 @@ const uploadFieldsPhotoResumeController = async (req, res, next) => {
     }
 };
 
+const deleteUploadedFileController = async (req, res, next) => {
+    try {
+        const fileId = req.params.id || req.params.filename;
+        const result = await deleteUploadedFileService(fileId);
+        return res.status(200).json(result);
+    } catch (err) {
+        if (err.statusCode) {
+            return res.status(err.statusCode).json({ message: err.message });
+        }
+        next(err);
+    }
+};
+
 module.exports = {
     checkUploadStatus,
     getDbStatusController,
@@ -102,5 +116,6 @@ module.exports = {
     getUploadedFilesController,
     uploadSinglePhotoController,
     uploadArrayPhotosController,
-    uploadFieldsPhotoResumeController
+    uploadFieldsPhotoResumeController,
+    deleteUploadedFileController
 };

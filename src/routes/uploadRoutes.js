@@ -12,7 +12,8 @@ const {
     getUploadedFilesController,
     uploadSinglePhotoController,
     uploadArrayPhotosController,
-    uploadFieldsPhotoResumeController
+    uploadFieldsPhotoResumeController,
+    deleteUploadedFileController
 } = require("../controllers/uploadController");
 
 // Test Upload Status (GET /upload or GET /upload/test)
@@ -35,5 +36,9 @@ router.post("/array", uploadArrayPhotos, uploadArrayPhotosController);
 
 // Upload Photo and Resume (POST /upload/fields)
 router.post("/fields", uploadFieldsPhotoResume, uploadFieldsPhotoResumeController);
+
+// Delete Uploaded File / Image (DELETE /upload/:id or DELETE /upload/file/:id)
+router.delete("/:id", deleteUploadedFileController);
+router.delete("/file/:id", deleteUploadedFileController);
 
 module.exports = router;
