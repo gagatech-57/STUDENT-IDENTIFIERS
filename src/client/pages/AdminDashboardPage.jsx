@@ -4,7 +4,7 @@ import { StudentGalleryModal } from '../components/StudentGalleryModal';
 import { StudentIdCardModal } from '../components/StudentIdCardModal';
 import { BulkImportModal } from '../components/BulkImportModal';
 import { Toast } from '../components/Toast';
-import { Su57Loader } from '../components/Su57Loader';
+import { SkeletonBoxLoader } from '../components/SkeletonBoxLoader';
 
 export function AdminDashboardPage({ admin, onLogout }) {
   const [students, setStudents] = useState([]);
@@ -316,9 +316,9 @@ export function AdminDashboardPage({ admin, onLogout }) {
               </div>
             </div>
 
-            {/* Su57 Tactical Animated Loader or Real Data Grid */}
+            {/* Enterprise Skeleton Box Loader Grid or Real Data Grid */}
             {loading ? (
-              <Su57Loader text="SYNCHRONIZING TACTICAL VAULT DATALINK..." subtext="FETCHING STUDENT RECORDS & FILE METADATA" />
+              <SkeletonBoxLoader count={6} />
             ) : (
               <div className="departments-container">
                 {Object.keys(departmentGrouped).length > 0 ? (
