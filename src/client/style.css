@@ -78,16 +78,18 @@ body::before {
     z-index: 1;
 }
 
+/* FIX: Responsive fluid container so content fills available laptop/desktop viewport */
 .container {
     position: relative;
     z-index: 10;
     width: 100%;
-    max-width: 1440px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 30px 24px;
+    padding: 24px 32px;
+    box-sizing: border-box;
 }
 
 /* Primary Black Buttons */
@@ -287,12 +289,15 @@ button:active {
     font-size: 14px;
 }
 
-/* Dashboard Section */
+/* FIX: Dashboard appears too narrow on large screens.
+   Remove the restrictive max-width and use a responsive fluid container
+   so the content fills the available laptop/desktop viewport. */
 .profile-box {
-    width: min(1360px, 100%);
-    max-width: 1380px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
     color: var(--color-text-main);
+    box-sizing: border-box;
 }
 
 /* Header Layout: Left Title Block (2 Lines) + Right Actions Row */
@@ -1129,7 +1134,7 @@ button:active {
 }
 
 .admin-box {
-    max-width: 1380px !important;
+    max-width: 100% !important;
     width: 100% !important;
     box-sizing: border-box !important;
 }
@@ -2669,212 +2674,7 @@ button:active {
     }
 }
 
-/* =========================================================
-   SU-57 FIGHTER JET ANIMATED LOADER & HUD OVERLAY
-   ========================================================= */
 
-.su57-loader-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 99999;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(248, 250, 252, 0.96);
-    backdrop-filter: blur(16px);
-}
-
-.su57-hud-container {
-    position: relative;
-    width: 340px;
-    height: 380px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-/* Radar Circular Grid Lines */
-.hud-radar-circle {
-    position: absolute;
-    top: 35%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border: 1px dashed rgba(0, 240, 255, 0.25);
-    border-radius: 50%;
-    pointer-events: none;
-}
-
-.hud-radar-circle.circle-1 { width: 140px; height: 140px; }
-.hud-radar-circle.circle-2 { width: 220px; height: 220px; border-style: solid; border-color: rgba(0, 240, 255, 0.15); }
-.hud-radar-circle.circle-3 { width: 290px; height: 290px; border-color: rgba(0, 240, 255, 0.1); }
-
-/* Sweeping Radar Scanner */
-.hud-radar-sweep {
-    position: absolute;
-    top: 35%;
-    left: 50%;
-    width: 290px;
-    height: 290px;
-    margin-top: -145px;
-    margin-left: -145px;
-    border-radius: 50%;
-    background: conic-gradient(from 0deg, rgba(0, 240, 255, 0.35) 0deg, transparent 60deg, transparent 360deg);
-    animation: radarSweep 3.5s linear infinite;
-    pointer-events: none;
-}
-
-@keyframes radarSweep {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* Supersonic Shockwave Rings */
-.sonic-ring {
-    position: absolute;
-    top: 35%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border: 1.5px solid #00f0ff;
-    border-radius: 50%;
-    opacity: 0;
-    pointer-events: none;
-    animation: sonicRingExpand 2.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
-}
-
-.sonic-ring.ring-2 {
-    animation-delay: 1.1s;
-}
-
-@keyframes sonicRingExpand {
-    0% {
-        width: 40px;
-        height: 40px;
-        opacity: 0.8;
-        border-color: #00f0ff;
-    }
-    50% {
-        border-color: #ff5500;
-    }
-    100% {
-        width: 320px;
-        height: 320px;
-        opacity: 0;
-    }
-}
-
-/* Su-57 Jet SVG Wrapper & Aerodynamic Maneuver */
-.su57-jet-wrapper {
-    position: absolute;
-    top: 35%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 210px;
-    height: 210px;
-    animation: jetFloat 3s ease-in-out infinite alternate;
-    z-index: 5;
-}
-
-.su57-jet-svg {
-    width: 100%;
-    height: 100%;
-    filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.4));
-}
-
-@keyframes jetFloat {
-    0% { transform: translate(-50%, -50%) translateY(0) rotate(0deg); }
-    50% { transform: translate(-50%, -50%) translateY(-6px) rotate(-1deg); }
-    100% { transform: translate(-50%, -50%) translateY(4px) rotate(1deg); }
-}
-
-/* Twin Engine Afterburner Flame Animations */
-.flame-pulse {
-    animation: flameThrust 0.15s ease-in-out infinite alternate;
-    transform-origin: 50% 0%;
-}
-
-.flame-core {
-    animation: flameCorePulse 0.12s ease-in-out infinite alternate;
-}
-
-@keyframes flameThrust {
-    0% { transform: scaleY(0.9) scaleX(0.95); opacity: 0.85; }
-    100% { transform: scaleY(1.25) scaleX(1.1); opacity: 1; filter: drop-shadow(0 0 12px #ff5500); }
-}
-
-@keyframes flameCorePulse {
-    0% { opacity: 0.7; }
-    100% { opacity: 1; }
-}
-
-/* HUD Telemetry Readout */
-.hud-telemetry {
-    position: absolute;
-    bottom: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 6px;
-    width: 100%;
-    z-index: 10;
-}
-
-.hud-status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 4px 14px;
-    border-radius: 999px;
-    background: #f1f5f9;
-    border: 1px solid #cbd5e1;
-    color: #0f172a;
-    font-family: var(--font-tech);
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1.5px;
-}
-
-.live-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #0284c7;
-    box-shadow: 0 0 8px #0284c7;
-    animation: hudPulse 1s infinite alternate;
-}
-
-@keyframes hudPulse {
-    0% { opacity: 0.4; }
-    100% { opacity: 1; transform: scale(1.2); }
-}
-
-.hud-loader-text {
-    color: #0f172a;
-    font-family: var(--font-heading);
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.hud-loader-subtext {
-    color: #0284c7;
-    font-family: var(--font-tech);
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    opacity: 0.9;
-}
-
-.hud-metrics-row {
-    display: flex;
-    gap: 12px;
-    margin-top: 4px;
-    color: var(--color-text-muted);
-    font-family: var(--font-tech);
-    font-size: 10px;
-    letter-spacing: 1px;
-}
 
 
 
