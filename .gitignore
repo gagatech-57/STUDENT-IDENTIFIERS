@@ -1,7 +1,12 @@
 node_modules/
+dist/
 .env
+.env.local
+.env.production
 uploads/*
 !uploads/.gitkeep
 src/uploads/*
 !src/uploads/.gitkeep
+public/src/
+src/public/
 .DS_Store
