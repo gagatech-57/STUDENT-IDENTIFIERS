@@ -4,6 +4,7 @@ import { StudentGalleryModal } from '../components/StudentGalleryModal';
 import { StudentIdCardModal } from '../components/StudentIdCardModal';
 import { BulkImportModal } from '../components/BulkImportModal';
 import { Toast } from '../components/Toast';
+import { Su57Loader } from '../components/Su57Loader';
 
 export function AdminDashboardPage({ admin, onLogout }) {
   const [students, setStudents] = useState([]);
@@ -315,12 +316,9 @@ export function AdminDashboardPage({ admin, onLogout }) {
               </div>
             </div>
 
-            {/* Clean Loading Indicator or Real Data Grid */}
+            {/* Su57 Tactical Animated Loader or Real Data Grid */}
             {loading ? (
-              <div className="skeleton-grid" style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '24px', marginBottom: '12px', color: '#0f172a' }}></i>
-                <p style={{ fontWeight: 600 }}>Loading records...</p>
-              </div>
+              <Su57Loader text="SYNCHRONIZING TACTICAL VAULT DATALINK..." subtext="FETCHING STUDENT RECORDS & FILE METADATA" />
             ) : (
               <div className="departments-container">
                 {Object.keys(departmentGrouped).length > 0 ? (

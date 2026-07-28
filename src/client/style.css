@@ -2692,6 +2692,201 @@ button:active {
     }
 }
 
+/* =========================================================
+   TACTICAL ANIMATED HUD LOADER FOR ADMIN DASHBOARD
+   ========================================================= */
+
+.su57-loader-container {
+    width: 100%;
+    padding: 60px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+}
+
+.su57-hud-container {
+    position: relative;
+    width: 320px;
+    height: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Radar Circular Grid Lines */
+.hud-radar-circle {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px dashed rgba(79, 140, 255, 0.25);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.hud-radar-circle.circle-1 { width: 130px; height: 130px; }
+.hud-radar-circle.circle-2 { width: 200px; height: 200px; border-style: solid; border-color: rgba(79, 140, 255, 0.15); }
+.hud-radar-circle.circle-3 { width: 270px; height: 270px; border-color: rgba(79, 140, 255, 0.1); }
+
+/* Sweeping Radar Scanner */
+.hud-radar-sweep {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    width: 270px;
+    height: 270px;
+    margin-top: -135px;
+    margin-left: -135px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(79, 140, 255, 0.35) 0deg, transparent 60deg, transparent 360deg);
+    animation: radarSweep 3.5s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes radarSweep {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Supersonic Shockwave Rings */
+.sonic-ring {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1.5px solid #4F8CFF;
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    animation: sonicRingExpand 2.2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
+
+.sonic-ring.ring-2 {
+    animation-delay: 1.1s;
+}
+
+@keyframes sonicRingExpand {
+    0% {
+        width: 40px;
+        height: 40px;
+        opacity: 0.8;
+        border-color: #4F8CFF;
+    }
+    50% {
+        border-color: #38BDF8;
+    }
+    100% {
+        width: 280px;
+        height: 280px;
+        opacity: 0;
+    }
+}
+
+/* Su-57 Jet SVG Wrapper & Aerodynamic Maneuver */
+.su57-jet-wrapper {
+    position: absolute;
+    top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 190px;
+    height: 190px;
+    animation: jetFloat 3s ease-in-out infinite alternate;
+    z-index: 5;
+}
+
+.su57-jet-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 15px rgba(79, 140, 255, 0.5));
+}
+
+@keyframes jetFloat {
+    0% { transform: translate(-50%, -50%) translateY(0) rotate(0deg); }
+    50% { transform: translate(-50%, -50%) translateY(-6px) rotate(-1deg); }
+    100% { transform: translate(-50%, -50%) translateY(4px) rotate(1deg); }
+}
+
+/* Twin Engine Afterburner Flame Animations */
+.flame-pulse {
+    animation: flameThrust 0.15s ease-in-out infinite alternate;
+    transform-origin: 50% 0%;
+}
+
+.flame-core {
+    animation: flameCorePulse 0.12s ease-in-out infinite alternate;
+}
+
+@keyframes flameThrust {
+    0% { transform: scaleY(0.9) scaleX(0.95); opacity: 0.85; }
+    100% { transform: scaleY(1.25) scaleX(1.1); opacity: 1; filter: drop-shadow(0 0 10px #38bdf8); }
+}
+
+@keyframes flameCorePulse {
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* HUD Telemetry Readout */
+.hud-telemetry {
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    width: 100%;
+    z-index: 10;
+}
+
+.hud-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 14px;
+    border-radius: 999px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    color: var(--color-primary);
+    font-family: var(--font-heading);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22C55E;
+    box-shadow: 0 0 8px #22C55E;
+    animation: hudPulse 1s infinite alternate;
+}
+
+@keyframes hudPulse {
+    0% { opacity: 0.4; }
+    100% { opacity: 1; transform: scale(1.2); }
+}
+
+.hud-loader-text {
+    color: var(--color-text-main);
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.hud-loader-subtext {
+    color: var(--color-primary);
+    font-family: var(--font-body);
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+}
+
 
 
 
