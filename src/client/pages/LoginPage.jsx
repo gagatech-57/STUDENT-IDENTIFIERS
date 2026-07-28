@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Input } from '../components/Input';
 
-export function LoginPage({ auth }) {
+export function LoginPage({ auth, onToast }) {
   const [mode, setMode] = useState('login'); // 'login' or 'register'
   const [formData, setFormData] = useState({
     name: '',
@@ -19,12 +19,20 @@ export function LoginPage({ auth }) {
     e.preventDefault();
     try {
       if (mode === 'login') {
-        await auth.login(formData.email, formData.password);
+        const res = await auth.login(formData.email, formData.password);
+        if (onToast) {
+          onToast(`Welcome back, ${res.student?.name || 'Student'}!`, 'Login Successful', 'success', 'fa-solid fa-circle-check');
+        }
       } else {
-        await auth.register(formData);
+        const res = await auth.register(formData);
+        if (onToast) {
+          onToast(`Account created successfully! Welcome ${res.student?.name || 'Student'}!`, 'Registration Complete', 'success', 'fa-solid fa-user-check');
+        }
       }
     } catch (err) {
-      // Error handled in auth hook
+      if (onToast) {
+        onToast(err.message || 'Authentication Failed', 'Login Error', 'error', 'fa-solid fa-triangle-exclamation');
+      }
     }
   };
 
