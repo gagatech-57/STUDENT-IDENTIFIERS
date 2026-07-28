@@ -59,27 +59,31 @@ h1, h2, h3, h4, h5, h6, .profile-kicker, .status-pill, .student-id, .auth-tab-bt
 
 body {
     min-height: 100vh;
+    width: 100%;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
     overflow-x: hidden;
     color: var(--color-text-main);
     background: var(--color-bg);
     position: relative;
 }
 
-/* FIX: Responsive fluid container so content fills available laptop/desktop viewport */
+/* FIX: Full Viewport Width Fluid Container for Laptop & Desktop Screens */
 .container {
     position: relative;
     z-index: 10;
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
     padding: 24px 32px;
-    box-sizing: border-box;
+    box-sizing: border-box !important;
+    flex: 1;
 }
 
 /* Clean Enterprise Primary Buttons */
@@ -111,7 +115,9 @@ button:active {
 
 /* Auth Container (Clean Enterprise Card) */
 .auth-box {
-    width: 440px;
+    width: 100%;
+    max-width: 440px;
+    margin: auto;
     padding: 38px;
     color: var(--color-text-main);
     background: var(--color-card-bg);
@@ -404,15 +410,17 @@ button:active {
     display: inline-block;
 }
 
-/* Dashboard Panel (Pure Black & White Box) */
+/* Dashboard Panel (Clean Enterprise Card) */
 .profile-panel {
     position: relative;
-    width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
     overflow: hidden;
-    background: #0a0a0a;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    border-radius: 28px;
-    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95);
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-card-border);
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    box-sizing: border-box !important;
 }
 
 .profile-panel::before {
@@ -420,16 +428,18 @@ button:active {
     position: absolute;
     inset: 0 0 auto;
     height: 2px;
-    background: #ffffff;
+    background: var(--color-primary);
 }
 
 .profile-hero {
     position: relative;
     display: grid;
     grid-template-columns: 140px 1fr;
-    gap: 28px;
+    gap: 32px;
     align-items: center;
-    padding: 42px 42px 30px;
+    padding: 40px 48px 30px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .student-avatar {
@@ -438,12 +448,12 @@ button:active {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
-    background: #141414;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 24px;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8);
-    font-size: 60px;
+    color: var(--color-primary);
+    background: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: 50%;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    font-size: 56px;
 }
 
 .student-summary {
@@ -454,37 +464,37 @@ button:active {
     display: inline-block;
     margin-bottom: 10px;
     padding: 6px 14px;
-    color: #ffffff;
-    background: #171717;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--color-primary);
+    background: var(--color-primary-light);
+    border: 1px solid rgba(79, 140, 255, 0.25);
     border-radius: 999px;
     font-size: 13px;
     font-weight: 700;
-    letter-spacing: 1px;
 }
 
 .student-summary h2 {
-    margin-bottom: 8px;
-    font-size: 40px;
+    margin-bottom: 6px;
+    font-size: clamp(28px, 3.5vw, 42px);
     font-weight: 800;
-    line-height: 1.1;
-    color: #ffffff;
-    overflow-wrap: anywhere;
+    letter-spacing: -0.5px;
+    color: var(--color-text-main);
 }
 
 .student-summary p {
-    color: #a1a1aa;
+    color: var(--color-text-muted);
     font-size: 16px;
     font-weight: 500;
     overflow-wrap: anywhere;
 }
 
-/* Detail Grid (Black & White Tiles) */
+/* Detail Grid (Enterprise Tiles) */
 .detail-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 14px;
-    padding: 0 42px 34px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    gap: 20px;
+    padding: 0 48px 36px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .info-tile {
