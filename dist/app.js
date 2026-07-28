@@ -8,7 +8,7 @@ const { useState, useEffect, useRef, useCallback } = React;
 // Centralized API Configuration
 const API_BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://localhost:3000"
-    : "https://server-testing-skra.onrender.com";
+    : "https://student-identifiers.onrender.com";
 
 function getFileUrl(url) {
     if (!url) return "";

@@ -3,24 +3,14 @@ const { getModels, getDbStatus } = require("../config/db");
 
 const getAllStudentsService = async () => {
     const { AtlasStudent, LocalStudent } = getModels();
-    let atlasStudents = [];
-    let localStudents = [];
 
-    if (AtlasStudent) {
-        try {
-            atlasStudents = await AtlasStudent.find().sort({ studentId: 1 }).lean();
-        } catch (e) {
-            console.warn("Atlas get students warning:", e.message);
-        }
-    }
+    const [atlasResult, localResult] = await Promise.allSettled([
+        AtlasStudent ? AtlasStudent.find().sort({ studentId: 1 }).lean() : Promise.resolve([]),
+        LocalStudent ? LocalStudent.find().sort({ studentId: 1 }).lean() : Promise.resolve([])
+    ]);
 
-    if (LocalStudent) {
-        try {
-            localStudents = await LocalStudent.find().sort({ studentId: 1 }).lean();
-        } catch (e) {
-            console.warn("Local get students warning:", e.message);
-        }
-    }
+    const atlasStudents = atlasResult.status === "fulfilled" ? (atlasResult.value || []) : [];
+    const localStudents = localResult.status === "fulfilled" ? (localResult.value || []) : [];
 
     const studentMap = new Map();
 
@@ -195,8 +185,20 @@ const syncStudentsService = async () => {
         };
     }
 
-    const atlasStudents = await AtlasStudent.find().lean();
-    const localStudents = await LocalStudent.find().lean();
+    let atlasStudents = [];
+    let localStudents = [];
+
+    try {
+        atlasStudents = await AtlasStudent.find().lean();
+    } catch (e) {
+        console.warn("Atlas fetch error during student sync:", e.message);
+    }
+
+    try {
+        localStudents = await LocalStudent.find().lean();
+    } catch (e) {
+        console.warn("Local fetch error during student sync:", e.message);
+    }
 
     const localEmails = new Set(localStudents.map(s => s.email));
     const atlasEmails = new Set(atlasStudents.map(s => s.email));
@@ -205,22 +207,30 @@ const syncStudentsService = async () => {
     let syncedToAtlas = 0;
 
     for (const s of atlasStudents) {
-        if (!localEmails.has(s.email)) {
+        if (s.email && !localEmails.has(s.email)) {
             const cleanDoc = { ...s };
             delete cleanDoc._id;
             delete cleanDoc.__v;
-            await LocalStudent.create(cleanDoc);
-            syncedToLocal++;
+            try {
+                await LocalStudent.create(cleanDoc);
+                syncedToLocal++;
+            } catch (e) {
+                console.warn("Sync to local failed for", s.email, e.message);
+            }
         }
     }
 
     for (const s of localStudents) {
-        if (!atlasEmails.has(s.email)) {
+        if (s.email && !atlasEmails.has(s.email)) {
             const cleanDoc = { ...s };
             delete cleanDoc._id;
             delete cleanDoc.__v;
-            await AtlasStudent.create(cleanDoc);
-            syncedToAtlas++;
+            try {
+                await AtlasStudent.create(cleanDoc);
+                syncedToAtlas++;
+            } catch (e) {
+                console.warn("Sync to Atlas failed for", s.email, e.message);
+            }
         }
     }
 

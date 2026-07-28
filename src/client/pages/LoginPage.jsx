@@ -30,6 +30,12 @@ export function LoginPage({ auth }) {
 
   return (
     <section className="auth-box">
+      <div className="brand-header" style={{ textCenter: 'center', marginBottom: '1.2rem' }}>
+        <span className="brand-badge">
+          <i className="fa-solid fa-id-card-clip"></i> Student Identifiers
+        </span>
+      </div>
+
       <div className="auth-tabs">
         <button
           type="button"
@@ -47,7 +53,7 @@ export function LoginPage({ auth }) {
         </button>
       </div>
 
-      <h1>{mode === 'login' ? 'Welcome Back' : 'Join Student Portal'}</h1>
+      <h1>{mode === 'login' ? 'Welcome Back' : 'Join Student Identifiers'}</h1>
 
       <form onSubmit={handleSubmit}>
         {mode === 'register' && (

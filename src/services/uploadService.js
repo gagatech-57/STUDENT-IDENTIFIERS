@@ -103,24 +103,13 @@ const getUploadedFilesService = async (uploadedByFilter) => {
         query.uploadedBy = uploadedByFilter.toLowerCase().trim();
     }
 
-    let atlasFiles = [];
-    let localFiles = [];
+    const [atlasResult, localResult] = await Promise.allSettled([
+        AtlasUpload ? AtlasUpload.find(query).sort({ uploadedAt: -1 }).limit(100).lean() : Promise.resolve([]),
+        LocalUpload ? LocalUpload.find(query).sort({ uploadedAt: -1 }).limit(100).lean() : Promise.resolve([])
+    ]);
 
-    if (AtlasUpload) {
-        try {
-            atlasFiles = await AtlasUpload.find(query).sort({ uploadedAt: -1 }).limit(100).lean();
-        } catch (e) {
-            console.warn("Atlas fetch warning:", e.message);
-        }
-    }
-
-    if (LocalUpload) {
-        try {
-            localFiles = await LocalUpload.find(query).sort({ uploadedAt: -1 }).limit(100).lean();
-        } catch (e) {
-            console.warn("Local fetch warning:", e.message);
-        }
-    }
+    const atlasFiles = atlasResult.status === "fulfilled" ? (atlasResult.value || []) : [];
+    const localFiles = localResult.status === "fulfilled" ? (localResult.value || []) : [];
 
     // Merge files from both databases and tag locations
     const fileMap = new Map();

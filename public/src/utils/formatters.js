@@ -1,7 +1,6 @@
 /**
  * Utility functions for date and file formatting
  */
-
 export function formatUploadDateTime(dateString) {
     if (!dateString) return "Just now";
     const date = new Date(dateString);
@@ -20,7 +19,6 @@ export function formatUploadDateTime(dateString) {
 
     return `${year}-${month}-${day} ${formattedHours}.${minutes} ${ampm}`;
 }
-
 export function formatFileSize(sizeInBytes) {
     if (!sizeInBytes || isNaN(sizeInBytes)) return "0 KB";
     const sizeInKb = sizeInBytes / 1024;

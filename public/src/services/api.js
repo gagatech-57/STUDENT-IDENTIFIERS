@@ -7,7 +7,7 @@ const getAxios = () => (typeof axios !== "undefined" ? axios : window.axios);
 
 export const API_BASE_URL = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://localhost:3000"
-    : "https://server-testing-skra.onrender.com";
+    : "https://student-identifiers.onrender.com";
 
 export function getFileUrl(url) {
     if (!url) return "";
