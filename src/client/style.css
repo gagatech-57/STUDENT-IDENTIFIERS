@@ -1,42 +1,29 @@
 /* =========================================================
-   🎨 THEME: "CYBER COMMAND CENTER"
-   Futuristic, Premium, High-Tech Cybersecurity Enterprise Admin Dashboard
+   🎨 PROJECT REDESIGN - "AURORA IDENTITY"
+   Apple x Linear x Vercel x Notion x Stripe Enterprise Style
    ========================================================= */
 
 :root {
-    /* Deep Navy & Cyber Void Backgrounds */
-    --color-bg: #030712;
-    --color-bg-alt: #0a1120;
-    --color-card-bg: rgba(15, 23, 42, 0.82);
-    --color-card-border: rgba(56, 189, 248, 0.22);
-    --color-card-hover: rgba(30, 41, 59, 0.92);
+    --color-bg: #0B0F17;
+    --color-surface: #111827;
+    --color-card-bg: #161B22;
+    --color-card-border: rgba(255, 255, 255, 0.08);
+    --color-card-border-hover: rgba(255, 255, 255, 0.18);
 
-    /* Soft Neon Cyan & Electric Blue Glow Accents */
-    --color-primary: #38bdf8;
-    --color-primary-hover: #0284c7;
-    --color-primary-glow: rgba(56, 189, 248, 0.45);
-    --color-electric-blue: #3b82f6;
-    --color-neon-cyan: #00f0ff;
-    --color-accent-purple: #a855f7;
-    --color-accent-emerald: #10b981;
-    --color-accent-rose: #f43f5e;
+    --color-primary: #4F8CFF;
+    --color-primary-hover: #3b76e8;
+    --color-primary-light: rgba(79, 140, 255, 0.12);
+    --color-success: #22C55E;
+    --color-success-bg: rgba(34, 197, 94, 0.12);
+    --color-danger: #EF4444;
+    --color-danger-bg: rgba(239, 68, 68, 0.12);
 
-    /* Typography Colors */
-    --color-text-heading: #f8fafc;
-    --color-text-main: #e2e8f0;
-    --color-text-muted: #94a3b8;
-    --color-text-dim: #64748b;
+    --color-text-main: #F8FAFC;
+    --color-text-muted: #94A3B8;
+    --color-text-dim: #64748B;
 
-    /* Gradients & Tactical Glows */
-    --gradient-brand: linear-gradient(135deg, #00f0ff 0%, #3b82f6 50%, #8b5cf6 100%);
-    --gradient-btn: linear-gradient(135deg, #0284c7 0%, #3b82f6 100%);
-    --gradient-btn-hover: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
-    --gradient-card: linear-gradient(145deg, rgba(15, 23, 42, 0.88) 0%, rgba(10, 17, 32, 0.95) 100%);
-
-    /* Font Families */
-    --font-heading: "Orbitron", "Chakra Petch", "Outfit", sans-serif;
-    --font-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-tech: "Orbitron", "Chakra Petch", monospace;
+    --font-heading: "Inter", "Manrope", sans-serif;
+    --font-body: "Inter", "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 * {
@@ -46,30 +33,28 @@
     font-family: var(--font-body);
 }
 
-/* Custom Cyber Scrollbars */
+/* Minimal Enterprise Scrollbars */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #030712;
+    background: #0B0F17;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #1e293b;
-    border: 1px solid rgba(56, 189, 248, 0.3);
+    background: #1f293d;
     border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #0284c7;
-    box-shadow: 0 0 10px #00f0ff;
+    background: #4F8CFF;
 }
 
 h1, h2, h3, h4, h5, h6, .profile-kicker, .status-pill, .student-id, .auth-tab-btn {
     font-family: var(--font-heading);
-    color: var(--color-text-heading);
+    color: var(--color-text-main);
 }
 
 body {
@@ -80,26 +65,7 @@ body {
     overflow-x: hidden;
     color: var(--color-text-main);
     background: var(--color-bg);
-    background-image: 
-        radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.12), transparent 45%),
-        radial-gradient(circle at 85% 85%, rgba(59, 130, 246, 0.1), transparent 45%),
-        radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.05), transparent 60%);
-    background-attachment: fixed;
     position: relative;
-}
-
-/* Cyber Animated Grid Lines & Depth Particle Effect */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.07;
-    background-image: 
-        linear-gradient(to right, rgba(56, 189, 248, 0.3) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(56, 189, 248, 0.3) 1px, transparent 1px);
-    background-size: 40px 40px;
-    z-index: 1;
 }
 
 /* FIX: Responsive fluid container so content fills available laptop/desktop viewport */
@@ -116,131 +82,129 @@ body::before {
     box-sizing: border-box;
 }
 
-/* Electric Blue & Neon Cyan Gradient Buttons */
+/* Clean Enterprise Primary Buttons */
 button {
     width: 100%;
-    padding: 14px 28px;
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    border-radius: 999px;
-    background: var(--gradient-btn);
+    padding: 12px 24px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: var(--color-primary);
     color: #ffffff;
     cursor: pointer;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 20px var(--color-primary-glow);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(79, 140, 255, 0.22);
 }
 
 button:hover {
-    background: var(--gradient-btn-hover);
+    background: var(--color-primary-hover);
     color: #ffffff;
-    border-color: rgba(0, 240, 255, 0.6);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(56, 189, 248, 0.55);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(79, 140, 255, 0.35);
 }
 
 button:active {
     transform: translateY(1px);
 }
 
-/* Auth Container (Glassmorphic Deep Navy Command Box) */
+/* Auth Container (Clean Enterprise Card) */
 .auth-box {
-    width: 480px;
-    padding: 42px;
+    width: 440px;
+    padding: 38px;
     color: var(--color-text-main);
-    background: var(--gradient-card);
-    backdrop-filter: blur(20px);
+    background: var(--color-card-bg);
     border: 1px solid var(--color-card-border);
-    border-radius: 26px;
-    box-shadow: 0 25px 80px rgba(3, 7, 18, 0.9), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
 }
 
 .auth-tabs {
     display: flex;
-    gap: 8px;
-    margin-bottom: 28px;
-    padding: 5px;
-    background: #090d16;
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    border-radius: 999px;
+    gap: 6px;
+    margin-bottom: 24px;
+    padding: 4px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: 14px;
 }
 
 .auth-tab-btn {
     flex: 1;
-    padding: 12px 18px;
+    padding: 10px 16px;
     border: 1px solid transparent;
-    border-radius: 999px;
+    border-radius: 10px;
     background: transparent;
-    color: #94a3b8;
+    color: var(--color-text-muted);
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.2s ease;
     box-shadow: none;
 }
 
 .auth-tab-btn.active {
-    background: var(--gradient-btn);
-    color: #ffffff;
-    border-color: rgba(56, 189, 248, 0.4);
-    box-shadow: 0 4px 18px rgba(56, 189, 248, 0.35);
+    background: var(--color-card-bg);
+    color: var(--color-text-main);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .auth-tab-btn:hover:not(.active) {
-    color: #ffffff;
-    background: rgba(56, 189, 248, 0.1);
+    color: var(--color-text-main);
+    background: rgba(255, 255, 255, 0.04);
 }
 
 .auth-box h1 {
-    margin-bottom: 28px;
-    font-size: 32px;
-    font-weight: 800;
+    margin-bottom: 24px;
+    font-size: 28px;
+    font-weight: 700;
     letter-spacing: -0.5px;
-    color: #ffffff;
+    color: var(--color-text-main);
     text-align: left;
 }
 
 .input-box {
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
 }
 
 .input-box i {
     position: absolute;
-    left: 18px;
+    left: 16px;
     top: 50%;
-    color: #38bdf8;
-    font-size: 16px;
+    color: var(--color-text-muted);
+    font-size: 15px;
     transform: translateY(-50%);
-    transition: color 0.3s ease;
+    transition: color 0.2s ease;
 }
 
 .input-box input {
     width: 100%;
-    padding: 16px 16px 16px 50px;
-    color: #f8fafc;
-    background: rgba(11, 19, 36, 0.9);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    border-radius: 14px;
+    padding: 14px 14px 14px 46px;
+    color: var(--color-text-main);
+    background: var(--color-surface);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     outline: none;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
-    transition: all 0.25s ease;
+    transition: all 0.2s ease;
 }
 
 .input-box input:focus {
-    border-color: #00f0ff;
-    background: rgba(15, 23, 42, 0.95);
-    box-shadow: 0 0 24px rgba(0, 240, 255, 0.25);
+    border-color: var(--color-primary);
+    background: var(--color-surface);
+    box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.18);
 }
 
 .input-box input:focus + i, .input-box input:focus ~ i {
-    color: #00f0ff;
+    color: var(--color-primary);
 }
 
 .input-box input::placeholder {
-    color: #64748b;
+    color: var(--color-text-dim);
 }
 
 .input-box.has-toggle input {
@@ -338,11 +302,11 @@ button:active {
     margin-bottom: 24px !important;
     padding: 16px 24px !important;
     width: 100% !important;
-    background: rgba(3, 7, 18, 0.85) !important;
+    background: rgba(17, 24, 39, 0.85) !important;
     backdrop-filter: blur(16px) !important;
-    border: 1px solid rgba(56, 189, 248, 0.22) !important;
-    border-radius: 20px !important;
-    box-shadow: 0 10px 30px rgba(3, 7, 18, 0.8) !important;
+    border: 1px solid var(--color-card-border) !important;
+    border-radius: 18px !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25) !important;
 }
 
 .header-title-block {
@@ -354,11 +318,11 @@ button:active {
 }
 
 .profile-kicker {
-    font-family: 'Orbitron', 'Plus Jakarta Sans', sans-serif !important;
-    font-size: 13px !important;
-    font-weight: 900 !important;
-    letter-spacing: 2px !important;
-    color: #ffffff !important;
+    font-family: var(--font-heading) !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+    color: var(--color-primary) !important;
     text-transform: uppercase !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -371,15 +335,15 @@ button:active {
 }
 
 .profile-kicker i {
-    font-size: 14px !important;
-    color: #ffffff !important;
+    font-size: 13px !important;
+    color: var(--color-primary) !important;
 }
 
 .profile-header h1 {
-    font-size: clamp(20px, 2.8vw, 30px) !important;
-    font-weight: 800 !important;
+    font-size: clamp(20px, 2.8vw, 26px) !important;
+    font-weight: 700 !important;
     letter-spacing: -0.5px !important;
-    color: #ffffff !important;
+    color: var(--color-text-main) !important;
     line-height: 1.1 !important;
     margin: 0 !important;
     white-space: nowrap !important;
@@ -1214,42 +1178,33 @@ button:active {
 }
 
 .stat-card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(0, 240, 255, 0.5);
-    box-shadow: 0 15px 45px rgba(56, 189, 248, 0.25);
+    transform: translateY(-2px);
+    border-color: var(--color-card-border-hover);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 .stat-icon {
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
-    background: rgba(56, 189, 248, 0.12);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    color: #38bdf8;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    color: var(--color-primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    transition: all 0.3s ease;
-}
-
-.stat-card:hover .stat-icon {
-    transform: scale(1.08);
-    box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
-    background: rgba(0, 240, 255, 0.2);
-    color: #00f0ff;
+    font-size: 20px;
+    transition: all 0.2s ease;
 }
 
 .stat-icon.cyan {
-    background: rgba(0, 240, 255, 0.12);
-    border-color: rgba(0, 240, 255, 0.3);
-    color: #00f0ff;
+    background: var(--color-surface);
+    color: #38BDF8;
 }
 
 .stat-icon.purple {
-    background: rgba(168, 85, 247, 0.12);
-    border-color: rgba(168, 85, 247, 0.3);
-    color: #c084fc;
+    background: var(--color-surface);
+    color: #A855F7;
 }
 
 .stat-info {
@@ -1259,19 +1214,17 @@ button:active {
 
 .stat-value {
     font-family: var(--font-heading);
-    font-size: 32px;
-    font-weight: 800;
-    color: #ffffff;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--color-text-main);
     line-height: 1.1;
     letter-spacing: -0.5px;
-    text-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
 }
 
 .stat-label {
     font-size: 13px;
-    color: #94a3b8;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    color: var(--color-text-muted);
+    font-weight: 500;
 }
 
 /* Admin Controls Bar */
@@ -1422,26 +1375,27 @@ button:active {
 
 .student-cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
     width: 100%;
     box-sizing: border-box;
 }
 
 .student-admin-card {
-    background: rgba(24, 24, 28, 0.85);
-    border: 1px solid rgba(255, 255, 255, 0.09);
-    border-radius: 16px;
-    padding: 18px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-card-border);
+    border-radius: 20px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: all 0.25 ease;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .student-admin-card:hover {
-    transform: translateY(-3px);
-    border-color: rgba(99, 102, 241, 0.4);
+    transform: translateY(-2px);
+    border-color: var(--color-card-border-hover);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
@@ -1456,11 +1410,12 @@ button:active {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #38bdf8);
+    background: var(--color-primary-light);
+    border: 1px solid rgba(79, 140, 255, 0.25);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
+    color: var(--color-primary);
     font-size: 18px;
     flex-shrink: 0;
 }
@@ -1473,33 +1428,34 @@ button:active {
 }
 
 .id-chip {
-    font-size: 11px;
-    font-weight: 700;
-    color: #38bdf8;
-    letter-spacing: 0.5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-primary);
+    letter-spacing: 0.2px;
 }
 
 .student-meta-main h4 {
     font-size: 16px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--color-text-main);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .student-email {
-    font-size: 12px;
-    color: #a1a1aa;
+    font-size: 13px;
+    color: var(--color-text-muted);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .student-card-details {
-    background: rgba(12, 12, 16, 0.6);
-    border-radius: 10px;
-    padding: 10px 12px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: 12px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
     gap: 6px;
