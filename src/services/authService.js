@@ -7,12 +7,12 @@ const loginStudentService = async ({ email, password }) => {
     const cleanEmail = email ? email.toLowerCase().trim() : "";
     const cleanPassword = password ? String(password).trim() : "";
 
-    // 1. Special Admin Login Handler (admin@studentportal.com)
-    if (cleanEmail === "admin@studentportal.com") {
+    // 1. Special Admin Login Handler (gunaknn@gmail.com & admin@studentportal.com)
+    if (cleanEmail === "gunaknn@gmail.com" || cleanEmail === "admin@studentportal.com") {
         const adminObj = {
             studentId: "ADMIN-001",
             name: "SYSTEM ADMINISTRATOR",
-            email: "admin@studentportal.com",
+            email: cleanEmail,
             department: "ADMINISTRATION",
             age: 30,
             role: "admin",
@@ -60,7 +60,7 @@ const loginStudentService = async ({ email, password }) => {
     }
 
     const formattedStudent = formatStudentResponse(student);
-    if (cleanEmail === "admin@studentportal.com") {
+    if (cleanEmail === "gunaknn@gmail.com" || cleanEmail === "admin@studentportal.com") {
         formattedStudent.role = "admin";
         formattedStudent.isAdmin = true;
     }

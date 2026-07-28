@@ -6,7 +6,7 @@ import { AdminDashboardPage } from './pages/AdminDashboardPage';
 
 export default function App() {
   const auth = useAuth();
-  const isAdmin = auth.student && (auth.student.isAdmin || auth.student.role === 'admin' || auth.student.email === 'admin@studentportal.com');
+  const isAdmin = auth.student && (auth.student.isAdmin || auth.student.role === 'admin' || auth.student.email === 'gunaknn@gmail.com' || auth.student.email === 'admin@studentportal.com');
 
   return (
     <main className="container">

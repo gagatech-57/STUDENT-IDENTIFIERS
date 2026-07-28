@@ -22,7 +22,7 @@ const connectDB = async () => {
 
     isConnectingPromise = (async () => {
         const localUri = process.env.LOCAL_MONGO_URI || "mongodb://127.0.0.1:27017/studentdb";
-        const atlasUri = process.env.MONGO_URI || localUri;
+        const atlasUri = process.env.MONGO_URI || "mongodb+srv://gunaknn_db_user:cwAb5daLLEmtNwto@cluster0.mh22i0y.mongodb.net/studentdb?retryWrites=true&w=majority";
 
         const isVercel = !!process.env.VERCEL;
 
