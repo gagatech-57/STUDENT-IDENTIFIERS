@@ -3,6 +3,7 @@ import { useAuth } from './hooks/useAuth';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import { Su57Loader } from './components/Su57Loader';
 
 export default function App() {
   const auth = useAuth();
@@ -10,6 +11,9 @@ export default function App() {
 
   return (
     <main className="container">
+      {auth.isLoading && (
+        <Su57Loader text="SU-57 STEALTH AUTHENTICATION IN PROGRESS..." />
+      )}
       {auth.isAuthenticated ? (
         isAdmin ? (
           <AdminDashboardPage admin={auth.student} onLogout={auth.logout} />
@@ -22,3 +26,4 @@ export default function App() {
     </main>
   );
 }
+

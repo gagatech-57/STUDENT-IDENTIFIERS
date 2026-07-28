@@ -4,6 +4,7 @@ import { StudentGalleryModal } from '../components/StudentGalleryModal';
 import { StudentIdCardModal } from '../components/StudentIdCardModal';
 import { BulkImportModal } from '../components/BulkImportModal';
 import { Toast } from '../components/Toast';
+import { Su57Loader } from '../components/Su57Loader';
 
 export function AdminDashboardPage({ admin, onLogout }) {
   const [students, setStudents] = useState([]);
@@ -315,20 +316,9 @@ export function AdminDashboardPage({ admin, onLogout }) {
               </div>
             </div>
 
-            {/* Skeleton Shimmer Loader or Real Data Grid */}
+            {/* Su57 Stealth Fighter Jet Loader or Real Data Grid */}
             {loading ? (
-              <div className="skeleton-grid">
-                {[1, 2, 3, 4, 5, 6].map(n => (
-                  <div key={n} className="skeleton-card">
-                    <div className="skeleton-line circle"></div>
-                    <div className="skeleton-block">
-                      <div className="skeleton-line short"></div>
-                      <div className="skeleton-line title"></div>
-                      <div className="skeleton-line medium"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <Su57Loader text="SYNCHRONIZING SU-57 TACTICAL VAULT DATALINK..." subtext="FETCHING STUDENT RECORDS & FILE METADATA" />
             ) : (
               <div className="departments-container">
                 {Object.keys(departmentGrouped).length > 0 ? (
